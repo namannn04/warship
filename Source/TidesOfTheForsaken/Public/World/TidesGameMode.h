@@ -7,7 +7,7 @@
 class AShipActor;
 class AController;
 
-/** Boots a zero-asset movement test in an empty Unreal level. */
+/** Boots the blockout naval combat encounter in an empty Unreal level. */
 UCLASS()
 class TIDESOFTHEFORSAKEN_API ATidesGameMode : public AGameModeBase
 {
@@ -16,6 +16,7 @@ class TIDESOFTHEFORSAKEN_API ATidesGameMode : public AGameModeBase
 public:
     ATidesGameMode();
     virtual void BeginPlay() override;
+    virtual void Tick(float DeltaSeconds) override;
     virtual void RestartPlayer(AController* NewPlayer) override;
 
 private:
@@ -23,4 +24,10 @@ private:
 
     UPROPERTY()
     TObjectPtr<AShipActor> PrototypeShip;
+
+    UPROPERTY()
+    TObjectPtr<AShipActor> EnemyShip;
+
+    bool bBattleEnded = false;
+    bool bPlayerVictory = false;
 };

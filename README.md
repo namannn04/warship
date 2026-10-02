@@ -7,12 +7,12 @@ An Unreal Engine 5 pirate game being built around one continuous, explorable shi
 - A third-person captain starts in an aft cabin and can walk through a three-level blockout ship, use two physical stairwells, take the helm and hand steering back to automatic heading control.
 - Sailing accounts for wind alignment, sail setting, acceleration, rudder authority, cargo, damage, and wave motion.
 - Six physical gun deck cannons have a manual loading cycle, aim controls, recoil and cannonball projectiles.
-- A passive target ship accepts hull and mast impacts. Hull breaches cause flooding; water lowers the ship and can sink it. Cannon impacts can also ignite fires, which spread between deck, sails and hold, damage the ship and respond to storm rain.
+- An enemy ship maneuvers for broadside shots and fires physical cannons at the player. Both ships take localized damage: hull breaches cause flooding, water lowers a ship and can sink it. A sunk ship ends the encounter with a victory or defeat message. Cannon impacts can also ignite fires, which spread between deck, sails and hold, damage the ship and respond to storm rain.
 - A gun-deck repair station lets the captain patch the hull and pump water. Cannons and repairs consume supplies shown at a physical hold ledger.
 - Visible blockout crew move toward role-aware jobs for gun loading, repair, pumping and firefighting.
 - A shared day/night and storm cycle drives sun light, wind, waves and fire weather.
 
-This is a **source prototype**, not the finished game or a verified playable build. The ship and crew use Unreal's basic shapes. Combat AI, boarding, islands, sea monsters, cinematic assets, audio, and most of the product brief remain to be built.
+This is a **source prototype**, not the finished game or a verified playable build. The ship and crew use Unreal's basic shapes. Boarding, islands, sea monsters, cinematic assets, audio, and most of the product brief remain to be built.
 
 ## Test status
 

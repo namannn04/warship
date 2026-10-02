@@ -39,7 +39,8 @@ void UEnemyShipAIComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
     AShipActor* OwnShip = Cast<AShipActor>(GetOwner());
-    if (!IsValid(OwnShip) || !IsValid(TargetShip) || OwnShip->GetShipDamage()->IsSunk()) return;
+    if (!IsValid(OwnShip) || !IsValid(TargetShip) || OwnShip->GetShipDamage()->IsSunk() ||
+        TargetShip->GetShipDamage()->IsSunk()) return;
 
     const FVector Own = OwnShip->GetActorLocation();
     const FVector Target = TargetShip->GetActorLocation();

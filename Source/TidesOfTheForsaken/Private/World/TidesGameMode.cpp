@@ -2,6 +2,7 @@
 #include "Character/CaptainCharacter.h"
 #include "Ship/ShipActor.h"
 #include "Ship/ShipMovementComponent.h"
+#include "Ship/ShipDamageComponent.h"
 #include "Crew/ShipCrewComponent.h"
 #include "Crew/CrewMember.h"
 #include "Weather/WeatherDirector.h"
@@ -18,9 +19,11 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/PlayerController.h"
 #include "Engine/World.h"
+#include "Engine/Engine.h"
 
 ATidesGameMode::ATidesGameMode()
 {
+    PrimaryActorTick.bCanEverTick = true;
     DefaultPawnClass = ACaptainCharacter::StaticClass();
 }
 
@@ -108,6 +111,7 @@ void ATidesGameMode::BeginPlay()
         FVector(0.f, -3500.f, 0.f), FRotator::ZeroRotator);
     if (TargetShip)
     {
+        EnemyShip = TargetShip;
         TargetShip->Tags.Add(TEXT("EnemyShip"));
         TargetShip->GetShipCrew()->SetWorkEnabled(false);
         TargetShip->GetEnemyAI()->SetTarget(PrototypeShip);
@@ -152,6 +156,29 @@ void ATidesGameMode::BeginPlay()
         Weather->RegisterShip(PrototypeShip);
         Weather->RegisterShip(TargetShip);
         Weather->SetSun(Sun);
+    }
+}
+
+void ATidesGameMode::Tick(float DeltaSeconds)
+{
+    Super::Tick(DeltaSeconds);
+    if (!bBattleEnded && IsValid(PrototypeShip) && IsValid(EnemyShip))
+    {
+        const bool bPlayerSunk = PrototypeShip->GetShipDamage()->IsSunk();
+        const bool bEnemySunk = EnemyShip->GetShipDamage()->IsSunk();
+        if (bPlayerSunk || bEnemySunk)
+        {
+            bBattleEnded = true;
+            bPlayerVictory = bEnemySunk && !bPlayerSunk;
+            EnemyShip->GetEnemyAI()->SetTarget(nullptr);
+            EnemyShip->GetShipCommands()->OrderSailPower(0.f);
+        }
+    }
+    if (bBattleEnded && GEngine)
+    {
+        GEngine->AddOnScreenDebugMessage(201, 0.f,
+            bPlayerVictory ? FColor::Green : FColor::Red,
+            bPlayerVictory ? TEXT("ENEMY SUNK - VICTORY") : TEXT("YOUR SHIP SUNK - DEFEAT"));
     }
 }
 
