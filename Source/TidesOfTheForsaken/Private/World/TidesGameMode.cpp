@@ -1,6 +1,7 @@
 #include "World/TidesGameMode.h"
 #include "Character/CaptainCharacter.h"
 #include "Ship/ShipActor.h"
+#include "Interaction/HelmStation.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMeshActor.h"
 #include "GameFramework/PlayerController.h"
@@ -20,6 +21,12 @@ void ATidesGameMode::BeginPlay()
     AShipActor* Ship = World->SpawnActor<AShipActor>(AShipActor::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator);
     if (Ship)
     {
+        AHelmStation* Helm = World->SpawnActor<AHelmStation>(AHelmStation::StaticClass(), Ship->GetHelmLocation(), Ship->GetActorRotation());
+        if (Helm)
+        {
+            Helm->SetOwningShip(Ship);
+            Helm->AttachToActor(Ship, FAttachmentTransformRules::KeepWorldTransform);
+        }
         if (APlayerController* PC = World->GetFirstPlayerController())
         {
             if (APawn* Pawn = PC->GetPawn()) Pawn->SetActorLocation(Ship->GetCaptainStartLocation());

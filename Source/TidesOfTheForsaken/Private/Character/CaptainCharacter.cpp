@@ -1,13 +1,16 @@
 #include "Character/CaptainCharacter.h"
 #include "Ship/ShipActor.h"
 #include "Ship/ShipMovementComponent.h"
+#include "Interaction/ShipInteractable.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Kismet/GameplayStatics.h"
+#include "Engine/Engine.h"
+#include "Engine/World.h"
+#include "GameFramework/PlayerController.h"
 #include "UObject/ConstructorHelpers.h"
 
 ACaptainCharacter::ACaptainCharacter()
@@ -52,6 +55,18 @@ void ACaptainCharacter::BeginPlay()
 void ACaptainCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
+    if (!SteeredShip)
+    {
+        if (AActor* Focused = FindFocusedInteractable())
+        {
+            const IShipInteractable* Target = Cast<IShipInteractable>(Focused);
+            if (Target && GEngine)
+            {
+                GEngine->AddOnScreenDebugMessage(101, 0.f, FColor::White,
+                    FString::Printf(TEXT("[E] %s"), *Target->GetInteractionText().ToString()));
+            }
+        }
+    }
     if (SteeredShip)
     {
         SetActorLocation(SteeredShip->GetHelmLocation());
@@ -112,16 +127,27 @@ void ACaptainCharacter::LookUp(float Value)
     AddControllerPitchInput(Value);
 }
 
-AShipActor* ACaptainCharacter::FindNearbyShip() const
+AActor* ACaptainCharacter::FindFocusedInteractable() const
 {
-    TArray<AActor*> Ships;
-    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AShipActor::StaticClass(), Ships);
-    for (AActor* Actor : Ships)
-    {
-        AShipActor* Ship = Cast<AShipActor>(Actor);
-        if (Ship && FVector::Dist(GetActorLocation(), Ship->GetHelmLocation()) < 240.f) return Ship;
-    }
-    return nullptr;
+    if (!FollowCamera || !GetWorld()) return nullptr;
+    const FVector Start = FollowCamera->GetComponentLocation();
+    const FVector End = Start + FollowCamera->GetForwardVector() * 500.f;
+    FHitResult Hit;
+    FCollisionQueryParams Query(SCENE_QUERY_STAT(CaptainInteraction), false, this);
+    if (!GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, Query)) return nullptr;
+    AActor* TargetActor = Hit.GetActor();
+    const IShipInteractable* Target = Cast<IShipInteractable>(TargetActor);
+    return Target && Target->CanInteract(this) ? TargetActor : nullptr;
+}
+
+void ACaptainCharacter::TakeHelm(AShipActor* Ship)
+{
+    if (!IsValid(Ship) || SteeredShip) return;
+    SteeredShip = Ship;
+    Ship->SetCaptainSteering(true);
+    GetCharacterMovement()->StopMovementImmediately();
+    GetCharacterMovement()->SetMovementMode(MOVE_None);
+    SetActorLocation(Ship->GetHelmLocation());
 }
 
 void ACaptainCharacter::Interact()
@@ -134,12 +160,8 @@ void ACaptainCharacter::Interact()
         GetCharacterMovement()->SetMovementMode(MOVE_Walking);
         return;
     }
-    if (AShipActor* Ship = FindNearbyShip())
+    if (AActor* Focused = FindFocusedInteractable())
     {
-        SteeredShip = Ship;
-        Ship->SetCaptainSteering(true);
-        GetCharacterMovement()->StopMovementImmediately();
-        GetCharacterMovement()->SetMovementMode(MOVE_None);
-        SetActorLocation(Ship->GetHelmLocation());
+        if (IShipInteractable* Target = Cast<IShipInteractable>(Focused)) Target->Interact(this);
     }
 }

@@ -46,8 +46,6 @@ private:
     TObjectPtr<UStaticMeshComponent> MastVisual;
 
     UPROPERTY(VisibleAnywhere, Category="Ship")
-    TObjectPtr<UStaticMeshComponent> HelmVisual;
-
     UPROPERTY(VisibleAnywhere, Category="Ship")
     TObjectPtr<UShipMovementComponent> ShipMovement;
 

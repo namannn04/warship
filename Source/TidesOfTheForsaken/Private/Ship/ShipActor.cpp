@@ -33,13 +33,6 @@ AShipActor::AShipActor()
     MastVisual->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     if (Cube.Succeeded()) MastVisual->SetStaticMesh(Cube.Object);
 
-    HelmVisual = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("HelmVisual"));
-    HelmVisual->SetupAttachment(DeckCollision);
-    HelmVisual->SetRelativeLocation(FVector(-850.f, 0.f, 95.f));
-    HelmVisual->SetRelativeScale3D(FVector(0.15f, 1.2f, 1.2f));
-    HelmVisual->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-    if (Cube.Succeeded()) HelmVisual->SetStaticMesh(Cube.Object);
-
     ShipMovement = CreateDefaultSubobject<UShipMovementComponent>(TEXT("ShipMovement"));
 }
 

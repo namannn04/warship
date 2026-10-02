@@ -21,13 +21,15 @@ public:
     virtual void Tick(float DeltaSeconds) override;
     virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
+    void TakeHelm(AShipActor* Ship);
+
 private:
     void MoveForward(float Value);
     void MoveRight(float Value);
     void Turn(float Value);
     void LookUp(float Value);
     void Interact();
-    AShipActor* FindNearbyShip() const;
+    AActor* FindFocusedInteractable() const;
 
     UPROPERTY(VisibleAnywhere, Category="Camera")
     TObjectPtr<USpringArmComponent> CameraBoom;
