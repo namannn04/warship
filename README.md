@@ -4,18 +4,19 @@ An Unreal Engine 5 pirate game being built around one continuous, explorable shi
 
 ## Current prototype source
 
-- A third-person captain can walk on a moving two-deck ship, use a physical stairwell, take the helm and hand steering back to automatic heading control.
+- A third-person captain starts in an aft cabin and can walk through a three-level blockout ship, use two physical stairwells, take the helm and hand steering back to automatic heading control.
 - Sailing accounts for wind alignment, sail setting, acceleration, rudder authority, cargo, damage, and wave motion.
 - Six physical gun deck cannons have a manual loading cycle, aim controls, recoil and cannonball projectiles.
-- A passive target ship accepts hull and mast impacts. Hull breaches cause flooding; water lowers the ship and can sink it.
-- A lower-deck repair station lets the captain patch the hull and pump water. Cannons and repairs consume ship supplies.
-- A role-aware crew job board drives low-frequency gunner reload and carpenter emergency work simulation.
+- A passive target ship accepts hull and mast impacts. Hull breaches cause flooding; water lowers the ship and can sink it. Cannon impacts can also ignite fires, which spread between deck, sails and hold, damage the ship and respond to storm rain.
+- A gun-deck repair station lets the captain patch the hull and pump water. Cannons and repairs consume supplies shown at a physical hold ledger.
+- Visible blockout crew move toward role-aware jobs for gun loading, repair, pumping and firefighting.
+- A shared day/night and storm cycle drives sun light, wind, waves and fire weather.
 
-This is a **source prototype**, not the finished game or a verified playable build. The crew are not yet visible characters, and the blockout uses Unreal's basic shapes. Combat AI, boarding, islands, sea monsters, cinematic assets, audio, and most of the product brief remain to be built.
+This is a **source prototype**, not the finished game or a verified playable build. The ship and crew use Unreal's basic shapes. Combat AI, boarding, islands, sea monsters, cinematic assets, audio, and most of the product brief remain to be built.
 
 ## Test status
 
-Run `Tests/run.sh` to compile and execute the engine-independent C++ rules for sailing, cannon loading, ship damage, inventory and crew job assignment. GitHub Actions runs these checks on every push.
+Run `Tests/run.sh` to compile and execute the engine-independent C++ rules for sailing, cannon loading, ship damage, inventory, crew job assignment, weather and fire. GitHub Actions runs these checks on every push.
 
 Until Unreal Editor is installed, only the portable tests can run. Once an official Linux engine build is available, `Scripts/build-linux.sh /path/to/UnrealEngine` builds the editor target. The project still needs Play-in-Editor checks for compile errors, moving-platform behavior, physical interactions, projectiles and performance. The focused manual checks are in `Docs/`.
 
