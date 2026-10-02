@@ -49,7 +49,7 @@ void AShipCannon::Interact(ACaptainCharacter* Captain)
 
 FVector AShipCannon::GetOperatorLocation() const
 {
-    return GetActorLocation() - GetActorForwardVector() * 145.f + FVector(0.f, 0.f, 15.f);
+    return GetActorLocation() - GetActorForwardVector() * 145.f + FVector(0.f, 0.f, 55.f);
 }
 
 FRotator AShipCannon::GetAimRotation() const
