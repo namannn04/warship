@@ -8,6 +8,7 @@
 #include "Interaction/HelmStation.h"
 #include "Interaction/RepairStation.h"
 #include "Interaction/SupplyLedger.h"
+#include "Interaction/FireStation.h"
 #include "Combat/ShipCannon.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMeshActor.h"
@@ -65,6 +66,17 @@ void ATidesGameMode::BeginPlay()
         {
             Ledger->SetOwningShip(PrototypeShip);
             Ledger->AttachToActor(PrototypeShip, FAttachmentTransformRules::KeepWorldTransform);
+        }
+        for (const Tides::Fire::EZone Zone : { Tides::Fire::EZone::Deck,
+            Tides::Fire::EZone::Sails, Tides::Fire::EZone::Hold })
+        {
+            AFireStation* Station = World->SpawnActor<AFireStation>(AFireStation::StaticClass(),
+                PrototypeShip->GetFireStationLocation(Zone), FRotator::ZeroRotator);
+            if (Station)
+            {
+                Station->Configure(PrototypeShip, Zone);
+                Station->AttachToActor(PrototypeShip, FAttachmentTransformRules::KeepWorldTransform);
+            }
         }
         struct FCrewSpawn { int32 Id; float X; float Y; const TCHAR* Label; };
         const FCrewSpawn CrewSpawns[] = {

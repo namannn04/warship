@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Ship/ShipFireModel.h"
 #include "ShipActor.generated.h"
 
 class USceneComponent;
@@ -36,6 +37,7 @@ public:
     FVector GetRepairStationLocation() const;
     FVector GetGunDeckCrewLocation(float AlongShip, float AcrossShip) const;
     FVector GetSupplyLedgerLocation() const;
+    FVector GetFireStationLocation(Tides::Fire::EZone Zone) const;
 
     void SetCaptainSteering(bool bSteering);
     void SetHelmRudder(float Value);

@@ -179,6 +179,19 @@ FVector AShipActor::GetSupplyLedgerLocation() const
     return DeckOrigin->GetComponentTransform().TransformPosition(FVector(-950.f, 0.f, -505.f));
 }
 
+FVector AShipActor::GetFireStationLocation(Tides::Fire::EZone Zone) const
+{
+    FVector Local;
+    switch (Zone)
+    {
+    case Tides::Fire::EZone::Deck: Local = FVector(-550.f, 0.f, 90.f); break;
+    case Tides::Fire::EZone::Sails: Local = FVector(650.f, 0.f, 90.f); break;
+    case Tides::Fire::EZone::Hold: Local = FVector(0.f, 0.f, -500.f); break;
+    default: Local = FVector::ZeroVector; break;
+    }
+    return DeckOrigin->GetComponentTransform().TransformPosition(Local);
+}
+
 void AShipActor::SetCaptainSteering(bool bSteering)
 {
     ShipCommands->SetCaptainAtHelm(bSteering);
