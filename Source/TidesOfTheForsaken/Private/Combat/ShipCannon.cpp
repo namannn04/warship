@@ -87,7 +87,10 @@ bool AShipCannon::Fire()
     FActorSpawnParameters SpawnParameters;
     SpawnParameters.Owner = this;
     SpawnParameters.Instigator = nullptr;
-    GetWorld()->SpawnActor<ACannonball>(ACannonball::StaticClass(), Muzzle, ShotRotation, SpawnParameters);
+    if (ACannonball* Shot = GetWorld()->SpawnActor<ACannonball>(ACannonball::StaticClass(), Muzzle, ShotRotation, SpawnParameters))
+    {
+        Shot->IgnoreShip(OwningShip);
+    }
     return true;
 }
 

@@ -7,6 +7,7 @@
 class USphereComponent;
 class UStaticMeshComponent;
 class UProjectileMovementComponent;
+class AShipActor;
 
 /** Physical shot; impact damage can be added per ship section. */
 UCLASS()
@@ -16,6 +17,7 @@ class TIDESOFTHEFORSAKEN_API ACannonball : public AActor
 
 public:
     ACannonball();
+    void IgnoreShip(AShipActor* Ship);
 
 private:
     UFUNCTION()
@@ -30,4 +32,7 @@ private:
 
     UPROPERTY(VisibleAnywhere, Category="Projectile")
     TObjectPtr<UProjectileMovementComponent> ProjectileMovement;
+
+    UPROPERTY()
+    TObjectPtr<AShipActor> SourceShip;
 };

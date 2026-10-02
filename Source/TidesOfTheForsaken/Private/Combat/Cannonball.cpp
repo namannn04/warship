@@ -32,9 +32,16 @@ ACannonball::ACannonball()
     InitialLifeSpan = 10.f;
 }
 
+void ACannonball::IgnoreShip(AShipActor* Ship)
+{
+    SourceShip = Ship;
+    if (IsValid(Ship)) Collision->IgnoreActorWhenMoving(Ship, true);
+}
+
 void ACannonball::OnImpact(UPrimitiveComponent* HitComponent, AActor* OtherActor,
     UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
 {
+    if (OtherActor == SourceShip.Get()) return;
     if (AShipActor* Ship = Cast<AShipActor>(OtherActor))
     {
         Ship->GetShipDamage()->ApplyImpact(OtherComponent, 35.f);

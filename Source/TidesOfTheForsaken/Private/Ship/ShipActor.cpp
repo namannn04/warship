@@ -132,6 +132,7 @@ AShipActor::AShipActor()
     {
         UPointLightComponent* Light = CreateDefaultSubobject<UPointLightComponent>(Name);
         Light->SetupAttachment(DeckOrigin);
+        Light->SetMobility(EComponentMobility::Movable);
         Light->SetRelativeLocation(Position);
         Light->SetLightColor(FLinearColor(1.f, 0.25f, 0.02f));
         Light->SetAttenuationRadius(450.f);
