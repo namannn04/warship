@@ -27,7 +27,10 @@ public:
     FVector GetOperatorLocation() const;
     FRotator GetAimRotation() const;
     void Aim(float YawInput, float PitchInput);
-    void AdvanceLoading();
+    bool AdvanceLoading();
+    bool NeedsLoading() const;
+    bool IsOperated() const { return bOperated; }
+    void SetOperated(bool bValue) { bOperated = bValue; }
     bool Fire();
     const char* GetLoadingStageLabel() const;
 
@@ -44,4 +47,5 @@ private:
     Tides::Cannon::FState LoadingState;
     float AimYaw = 0.f;
     float AimPitch = 0.f;
+    bool bOperated = false;
 };

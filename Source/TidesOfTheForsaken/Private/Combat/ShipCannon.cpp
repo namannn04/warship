@@ -64,13 +64,19 @@ void AShipCannon::Aim(float YawInput, float PitchInput)
     BarrelVisual->SetRelativeRotation(FRotator(AimPitch, AimYaw, 0.f));
 }
 
-void AShipCannon::AdvanceLoading()
+bool AShipCannon::AdvanceLoading()
 {
-    if (!IsValid(OwningShip)) return;
+    if (!IsValid(OwningShip)) return false;
     UShipInventoryComponent* Inventory = OwningShip->GetShipInventory();
-    if (LoadingState.Stage == Tides::Cannon::EStage::Clean && !Inventory->ConsumePowder()) return;
-    if (LoadingState.Stage == Tides::Cannon::EStage::Powder && !Inventory->ConsumeCannonball()) return;
-    Tides::Cannon::AdvanceLoading(LoadingState);
+    if (LoadingState.Stage == Tides::Cannon::EStage::Clean && !Inventory->ConsumePowder()) return false;
+    if (LoadingState.Stage == Tides::Cannon::EStage::Powder && !Inventory->ConsumeCannonball()) return false;
+    return Tides::Cannon::AdvanceLoading(LoadingState);
+}
+
+bool AShipCannon::NeedsLoading() const
+{
+    return LoadingState.Stage != Tides::Cannon::EStage::Ready
+        && LoadingState.Stage != Tides::Cannon::EStage::Recoil;
 }
 
 bool AShipCannon::Fire()

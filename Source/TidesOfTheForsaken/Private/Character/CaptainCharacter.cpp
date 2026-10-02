@@ -197,6 +197,7 @@ void ACaptainCharacter::OperateCannon(AShipCannon* Cannon)
 {
     if (!IsValid(Cannon) || SteeredShip || OperatedCannon) return;
     OperatedCannon = Cannon;
+    Cannon->SetOperated(true);
     GetCharacterMovement()->StopMovementImmediately();
     GetCharacterMovement()->SetMovementMode(MOVE_None);
     SetActorLocation(Cannon->GetOperatorLocation());
@@ -211,6 +212,7 @@ void ACaptainCharacter::Interact()
 {
     if (OperatedCannon)
     {
+        OperatedCannon->SetOperated(false);
         OperatedCannon = nullptr;
         GetCharacterMovement()->SetMovementMode(MOVE_Walking);
         return;

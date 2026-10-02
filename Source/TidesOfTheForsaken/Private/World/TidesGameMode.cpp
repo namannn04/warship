@@ -2,6 +2,7 @@
 #include "Character/CaptainCharacter.h"
 #include "Ship/ShipActor.h"
 #include "Ship/ShipMovementComponent.h"
+#include "Crew/ShipCrewComponent.h"
 #include "Interaction/HelmStation.h"
 #include "Interaction/RepairStation.h"
 #include "Combat/ShipCannon.h"
@@ -50,6 +51,7 @@ void ATidesGameMode::BeginPlay()
                 if (Cannon)
                 {
                     Cannon->SetOwningShip(PrototypeShip);
+                    PrototypeShip->GetShipCrew()->RegisterCannon(Cannon);
                     Cannon->AttachToActor(PrototypeShip, FAttachmentTransformRules::KeepWorldTransform);
                 }
             }
@@ -68,6 +70,7 @@ void ATidesGameMode::BeginPlay()
         TargetShip->Tags.Add(TEXT("BroadsideTarget"));
         TargetShip->GetShipMovement()->SetSailPower(0.f);
         TargetShip->GetShipMovement()->SetAnchored(true);
+        TargetShip->GetShipCrew()->SetWorkEnabled(false);
     }
 
     AStaticMeshActor* Ocean = World->SpawnActor<AStaticMeshActor>(AStaticMeshActor::StaticClass(), FVector(0.f, 0.f, -20.f), FRotator::ZeroRotator);
