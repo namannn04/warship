@@ -1,6 +1,7 @@
 #include "Ship/ShipActor.h"
 #include "Ship/ShipMovementComponent.h"
 #include "Crew/ShipCommandComponent.h"
+#include "Ship/ShipDamageComponent.h"
 #include "Components/SceneComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "UObject/ConstructorHelpers.h"
@@ -66,11 +67,12 @@ AShipActor::AShipActor()
     MastVisual->SetMobility(EComponentMobility::Movable);
     MastVisual->SetRelativeLocation(FVector(650.f, 0.f, 550.f));
     MastVisual->SetRelativeScale3D(FVector(0.5f, 0.5f, 11.f));
-    MastVisual->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    MastVisual->SetCollisionProfileName(TEXT("BlockAll"));
     if (Cube.Succeeded()) MastVisual->SetStaticMesh(Cube.Object);
 
     ShipMovement = CreateDefaultSubobject<UShipMovementComponent>(TEXT("ShipMovement"));
     ShipCommands = CreateDefaultSubobject<UShipCommandComponent>(TEXT("ShipCommands"));
+    ShipDamage = CreateDefaultSubobject<UShipDamageComponent>(TEXT("ShipDamage"));
 }
 
 FVector AShipActor::GetCaptainStartLocation() const

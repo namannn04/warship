@@ -1,4 +1,7 @@
 #include "Combat/Cannonball.h"
+#include "Ship/ShipActor.h"
+#include "Ship/ShipDamageComponent.h"
+#include "Engine/Engine.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
@@ -30,5 +33,15 @@ ACannonball::ACannonball()
 void ACannonball::OnImpact(UPrimitiveComponent* HitComponent, AActor* OtherActor,
     UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
 {
+    if (AShipActor* Ship = Cast<AShipActor>(OtherActor))
+    {
+        Ship->GetShipDamage()->ApplyImpact(OtherComponent, 35.f);
+        if (GEngine)
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Orange,
+                FString::Printf(TEXT("Ship hit: hull %.0f, water %.0f"),
+                    Ship->GetShipDamage()->GetHullIntegrity(), Ship->GetShipDamage()->GetWaterLevel()));
+        }
+    }
     Destroy();
 }

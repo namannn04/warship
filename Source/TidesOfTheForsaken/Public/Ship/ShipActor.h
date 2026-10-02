@@ -8,6 +8,7 @@ class USceneComponent;
 class UStaticMeshComponent;
 class UShipMovementComponent;
 class UShipCommandComponent;
+class UShipDamageComponent;
 
 /** Walkable two-level prototype ship with an open stairwell. */
 UCLASS()
@@ -36,6 +37,9 @@ public:
     UFUNCTION(BlueprintPure, Category="Ship")
     UShipCommandComponent* GetShipCommands() const { return ShipCommands; }
 
+    UFUNCTION(BlueprintPure, Category="Ship")
+    UShipDamageComponent* GetShipDamage() const { return ShipDamage; }
+
 private:
     UPROPERTY(VisibleAnywhere, Category="Ship")
     TObjectPtr<USceneComponent> ShipRoot;
@@ -54,4 +58,7 @@ private:
 
     UPROPERTY(VisibleAnywhere, Category="Ship")
     TObjectPtr<UShipCommandComponent> ShipCommands;
+
+    UPROPERTY(VisibleAnywhere, Category="Ship")
+    TObjectPtr<UShipDamageComponent> ShipDamage;
 };

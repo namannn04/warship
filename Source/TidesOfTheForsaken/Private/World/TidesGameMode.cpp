@@ -1,6 +1,7 @@
 #include "World/TidesGameMode.h"
 #include "Character/CaptainCharacter.h"
 #include "Ship/ShipActor.h"
+#include "Ship/ShipMovementComponent.h"
 #include "Interaction/HelmStation.h"
 #include "Combat/ShipCannon.h"
 #include "Components/StaticMeshComponent.h"
@@ -49,6 +50,16 @@ void ATidesGameMode::BeginPlay()
         {
             PlaceCaptain(PC);
         }
+    }
+
+    // A passive broadside target makes damage and flooding observable in the slice.
+    AShipActor* TargetShip = World->SpawnActor<AShipActor>(AShipActor::StaticClass(),
+        FVector(0.f, -3500.f, 0.f), FRotator::ZeroRotator);
+    if (TargetShip)
+    {
+        TargetShip->Tags.Add(TEXT("BroadsideTarget"));
+        TargetShip->GetShipMovement()->SetSailPower(0.f);
+        TargetShip->GetShipMovement()->SetAnchored(true);
     }
 
     AStaticMeshActor* Ocean = World->SpawnActor<AStaticMeshActor>(AStaticMeshActor::StaticClass(), FVector(0.f, 0.f, -20.f), FRotator::ZeroRotator);

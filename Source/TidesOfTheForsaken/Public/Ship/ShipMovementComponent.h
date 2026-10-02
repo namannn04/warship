@@ -25,6 +25,8 @@ public:
     UFUNCTION(BlueprintCallable, Category="Ship|Sailing")
     void SetAnchored(bool bValue);
 
+    void SetConditionFactors(float SailFactor, float RudderFactor, float WaterLevel);
+
     UFUNCTION(BlueprintPure, Category="Ship|Sailing")
     float GetSpeedCmPerSecond() const { return SpeedCmPerSecond; }
 
@@ -62,4 +64,7 @@ private:
     bool bAnchored = false;
     float BaseWaterlineZ = 0.f;
     Tides::Sailing::FState SailingState;
+    float SailCondition = 1.f;
+    float RudderCondition = 1.f;
+    float WaterLevel = 0.f;
 };

@@ -1,6 +1,7 @@
 #include "Character/CaptainCharacter.h"
 #include "Ship/ShipActor.h"
 #include "Ship/ShipMovementComponent.h"
+#include "Ship/ShipDamageComponent.h"
 #include "Crew/ShipCommandComponent.h"
 #include "Combat/ShipCannon.h"
 #include "Interaction/ShipInteractable.h"
@@ -86,9 +87,10 @@ void ACaptainCharacter::Tick(float DeltaSeconds)
         if (GEngine)
         {
             const UShipMovementComponent* Movement = CurrentShip->GetShipMovement();
-            const FString Status = FString::Printf(TEXT("Heading %.0f  |  Speed %.1f m/s  |  Sail %.0f%%  |  Anchor %s"),
+            const FString Status = FString::Printf(TEXT("Heading %.0f  |  Speed %.1f m/s  |  Sail %.0f%%  |  Anchor %s  |  Hull %.0f  |  Water %.0f"),
                 CurrentShip->GetActorRotation().Yaw, Movement->GetSpeedCmPerSecond() / 100.f,
-                Movement->GetSailPower() * 100.f, Movement->IsAnchored() ? TEXT("DOWN") : TEXT("UP"));
+                Movement->GetSailPower() * 100.f, Movement->IsAnchored() ? TEXT("DOWN") : TEXT("UP"),
+                CurrentShip->GetShipDamage()->GetHullIntegrity(), CurrentShip->GetShipDamage()->GetWaterLevel());
             GEngine->AddOnScreenDebugMessage(102, 0.f, FColor::Cyan, Status);
         }
     }

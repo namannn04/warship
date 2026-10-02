@@ -31,16 +31,23 @@ void UShipMovementComponent::SetAnchored(bool bValue)
     bAnchored = bValue;
 }
 
+void UShipMovementComponent::SetConditionFactors(float SailFactor, float RudderFactor, float NewWaterLevel)
+{
+    SailCondition = FMath::Clamp(SailFactor, 0.f, 1.f);
+    RudderCondition = FMath::Clamp(RudderFactor, 0.f, 1.f);
+    WaterLevel = FMath::Clamp(NewWaterLevel, 0.f, 100.f);
+}
+
 void UShipMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
     if (!GetOwner() || DeltaTime <= 0.f) return;
 
     Tides::Sailing::FConfig Config;
-    Config.MaximumSpeed = MaximumSpeedCmPerSecond;
+    Config.MaximumSpeed = MaximumSpeedCmPerSecond * SailCondition;
     Config.Acceleration = AccelerationCmPerSecondSquared;
     Config.Deceleration = DecelerationCmPerSecondSquared;
-    Config.MaximumTurnDegreesPerSecond = MaximumTurnDegreesPerSecond;
+    Config.MaximumTurnDegreesPerSecond = MaximumTurnDegreesPerSecond * RudderCondition;
     Config.WaveHeight = WaveHeightCm;
     Config.WindX = WindDirection.X;
     Config.WindY = WindDirection.Y;
@@ -52,7 +59,7 @@ void UShipMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
     Tides::Sailing::Advance(SailingState, Config, Command, DeltaTime);
     SpeedCmPerSecond = static_cast<float>(SailingState.Speed);
 
-    const FVector Position(SailingState.X, SailingState.Y, BaseWaterlineZ + SailingState.Heave);
+    const FVector Position(SailingState.X, SailingState.Y, BaseWaterlineZ + SailingState.Heave - WaterLevel * 1.5f);
     const FRotator Rotation(SailingState.PitchDegrees, SailingState.YawDegrees, SailingState.RollDegrees);
     GetOwner()->SetActorLocationAndRotation(Position, Rotation, false, nullptr, ETeleportType::None);
 }
