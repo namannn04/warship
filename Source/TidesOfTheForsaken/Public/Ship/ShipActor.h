@@ -32,6 +32,7 @@ public:
 
     FVector GetCannonLocation(float AlongShip, bool bPort) const;
     FVector GetRepairStationLocation() const;
+    FVector GetGunDeckCrewLocation(float AlongShip, float AcrossShip) const;
 
     void SetCaptainSteering(bool bSteering);
     void SetHelmRudder(float Value);

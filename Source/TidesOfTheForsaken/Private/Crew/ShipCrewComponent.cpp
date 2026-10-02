@@ -1,5 +1,6 @@
 #include "Crew/ShipCrewComponent.h"
 #include "Combat/ShipCannon.h"
+#include "Crew/CrewMember.h"
 #include "Ship/ShipDamageComponent.h"
 #include "GameFramework/Actor.h"
 
@@ -20,6 +21,13 @@ void UShipCrewComponent::BeginPlay()
 void UShipCrewComponent::RegisterCannon(AShipCannon* Cannon)
 {
     if (IsValid(Cannon)) Cannons.AddUnique(Cannon);
+}
+
+void UShipCrewComponent::RegisterCrewMember(int32 CrewId, ACrewMember* Member)
+{
+    if (CrewId < 1 || !IsValid(Member)) return;
+    CrewActors.SetNum(FMath::Max(CrewActors.Num(), CrewId));
+    CrewActors[CrewId - 1] = Member;
 }
 
 void UShipCrewComponent::UpdateJobs()
@@ -95,6 +103,13 @@ void UShipCrewComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
     UpdateJobs();
     for (FCrewWorker& Worker : Workers)
     {
+        ACrewMember* Actor = CrewActors.IsValidIndex(Worker.Id - 1) ? CrewActors[Worker.Id - 1].Get() : nullptr;
+        if (IsValid(Actor))
+        {
+            const FVector Local = Actor->GetShipLocalPosition();
+            Worker.X = Local.X;
+            Worker.Y = Local.Y;
+        }
         if (!JobBoard.Find(Worker.JobId))
         {
             Worker.JobId = JobBoard.ClaimBest(Worker.Id, Worker.Role, Worker.X, Worker.Y);
@@ -102,6 +117,15 @@ void UShipCrewComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
         }
         const Tides::Crew::FJob* Job = JobBoard.Find(Worker.JobId);
         if (!Job) continue;
+        if (IsValid(Actor))
+        {
+            Actor->SetWorkDestination(Job->X, Job->Y);
+            if (!Actor->HasReachedDestination())
+            {
+                Worker.WorkElapsed = 0.f;
+                continue;
+            }
+        }
         Worker.WorkElapsed += Step;
         if (Worker.WorkElapsed < 2.f) continue;
         Worker.WorkElapsed = 0.f;

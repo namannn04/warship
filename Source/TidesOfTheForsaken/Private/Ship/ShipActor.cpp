@@ -100,6 +100,11 @@ FVector AShipActor::GetRepairStationLocation() const
     return DeckOrigin->GetComponentTransform().TransformPosition(FVector(-900.f, 0.f, -195.f));
 }
 
+FVector AShipActor::GetGunDeckCrewLocation(float AlongShip, float AcrossShip) const
+{
+    return DeckOrigin->GetComponentTransform().TransformPosition(FVector(AlongShip, AcrossShip, -190.f));
+}
+
 void AShipActor::SetCaptainSteering(bool bSteering)
 {
     ShipCommands->SetCaptainAtHelm(bSteering);

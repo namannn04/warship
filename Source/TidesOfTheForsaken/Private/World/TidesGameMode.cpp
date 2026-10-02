@@ -3,6 +3,7 @@
 #include "Ship/ShipActor.h"
 #include "Ship/ShipMovementComponent.h"
 #include "Crew/ShipCrewComponent.h"
+#include "Crew/CrewMember.h"
 #include "Interaction/HelmStation.h"
 #include "Interaction/RepairStation.h"
 #include "Combat/ShipCannon.h"
@@ -54,6 +55,23 @@ void ATidesGameMode::BeginPlay()
                     PrototypeShip->GetShipCrew()->RegisterCannon(Cannon);
                     Cannon->AttachToActor(PrototypeShip, FAttachmentTransformRules::KeepWorldTransform);
                 }
+            }
+        }
+        struct FCrewSpawn { int32 Id; float X; float Y; const TCHAR* Label; };
+        const FCrewSpawn CrewSpawns[] = {
+            { 1, -400.f, -200.f, TEXT("GUNNER") },
+            { 2, 400.f, 200.f, TEXT("GUNNER") },
+            { 3, -900.f, 0.f, TEXT("CARPENTER") }
+        };
+        for (const FCrewSpawn& Spec : CrewSpawns)
+        {
+            ACrewMember* Member = World->SpawnActor<ACrewMember>(ACrewMember::StaticClass(),
+                PrototypeShip->GetGunDeckCrewLocation(Spec.X, Spec.Y), FRotator::ZeroRotator);
+            if (Member)
+            {
+                Member->SetRoleLabel(Spec.Label);
+                Member->SetShip(PrototypeShip);
+                PrototypeShip->GetShipCrew()->RegisterCrewMember(Spec.Id, Member);
             }
         }
         if (APlayerController* PC = World->GetFirstPlayerController())

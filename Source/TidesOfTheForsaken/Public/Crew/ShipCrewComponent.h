@@ -6,6 +6,7 @@
 #include "ShipCrewComponent.generated.h"
 
 class AShipCannon;
+class ACrewMember;
 class UShipDamageComponent;
 
 struct FCrewWorker
@@ -29,6 +30,7 @@ public:
     virtual void BeginPlay() override;
     virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
     void RegisterCannon(AShipCannon* Cannon);
+    void RegisterCrewMember(int32 CrewId, ACrewMember* Member);
     void SetWorkEnabled(bool bValue) { bWorkEnabled = bValue; }
 
     UFUNCTION(BlueprintPure, Category="Ship|Crew")
@@ -40,6 +42,9 @@ private:
 
     UPROPERTY()
     TArray<TObjectPtr<AShipCannon>> Cannons;
+
+    UPROPERTY()
+    TArray<TObjectPtr<ACrewMember>> CrewActors;
 
     Tides::Crew::FJobBoard JobBoard;
     TArray<FCrewWorker> Workers;
