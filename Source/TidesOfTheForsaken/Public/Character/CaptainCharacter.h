@@ -37,6 +37,7 @@ private:
     void ToggleAnchor();
     void OrderPort();
     void OrderStarboard();
+    void ToggleSpyglass();
     AShipActor* GetShipForOrders() const;
     AActor* FindFocusedInteractable() const;
 
@@ -56,4 +57,5 @@ private:
     TObjectPtr<AShipCannon> OperatedCannon;
 
     float SteeringInput = 0.f;
+    bool bUsingSpyglass = false;
 };

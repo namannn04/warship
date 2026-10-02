@@ -107,6 +107,22 @@ void ACaptainCharacter::Tick(float DeltaSeconds)
             }
         }
     }
+    if (bUsingSpyglass && GEngine)
+    {
+        const ATidesGameMode* Mode = GetWorld()->GetAuthGameMode<ATidesGameMode>();
+        const AShipActor* Enemy = Mode ? Mode->GetEnemyShip() : nullptr;
+        if (IsValid(Enemy))
+        {
+            const FVector ToEnemy = Enemy->GetActorLocation() - FollowCamera->GetComponentLocation();
+            const float Distance = ToEnemy.Size();
+            if (Distance > 1.f && FVector::DotProduct(FollowCamera->GetForwardVector(), ToEnemy / Distance) > 0.97f)
+            {
+                GEngine->AddOnScreenDebugMessage(105, 0.f, FColor::Yellow,
+                    FString::Printf(TEXT("SPYGLASS  |  Enemy ship  |  Range %.0f m  |  Heading %.0f"),
+                        Distance / 100.f, Enemy->GetActorRotation().Yaw));
+            }
+        }
+    }
     if (SteeredShip)
     {
         SetActorLocation(SteeredShip->GetHelmLocation());
@@ -129,6 +145,7 @@ void ACaptainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
     PlayerInputComponent->BindAction(TEXT("ToggleAnchor"), IE_Pressed, this, &ACaptainCharacter::ToggleAnchor);
     PlayerInputComponent->BindAction(TEXT("OrderPort"), IE_Pressed, this, &ACaptainCharacter::OrderPort);
     PlayerInputComponent->BindAction(TEXT("OrderStarboard"), IE_Pressed, this, &ACaptainCharacter::OrderStarboard);
+    PlayerInputComponent->BindAction(TEXT("ToggleSpyglass"), IE_Pressed, this, &ACaptainCharacter::ToggleSpyglass);
 }
 
 void ACaptainCharacter::MoveForward(float Value)
@@ -199,6 +216,7 @@ AActor* ACaptainCharacter::FindFocusedInteractable() const
 void ACaptainCharacter::TakeHelm(AShipActor* Ship)
 {
     if (!IsValid(Ship) || SteeredShip || OperatedCannon) return;
+    if (bUsingSpyglass) ToggleSpyglass();
     SteeredShip = Ship;
     Ship->SetCaptainSteering(true);
     GetCharacterMovement()->StopMovementImmediately();
@@ -209,11 +227,22 @@ void ACaptainCharacter::TakeHelm(AShipActor* Ship)
 void ACaptainCharacter::OperateCannon(AShipCannon* Cannon)
 {
     if (!IsValid(Cannon) || SteeredShip || OperatedCannon) return;
+    if (bUsingSpyglass) ToggleSpyglass();
     OperatedCannon = Cannon;
     Cannon->SetOperated(true);
     GetCharacterMovement()->StopMovementImmediately();
     GetCharacterMovement()->SetMovementMode(MOVE_None);
     SetActorLocation(Cannon->GetOperatorLocation());
+}
+
+void ACaptainCharacter::ToggleSpyglass()
+{
+    if (SteeredShip || OperatedCannon) return;
+    bUsingSpyglass = !bUsingSpyglass;
+    CameraBoom->TargetArmLength = bUsingSpyglass ? 0.f : 380.f;
+    CameraBoom->SetRelativeLocation(FVector(0.f, 0.f, bUsingSpyglass ? 55.f : 0.f));
+    FollowCamera->SetFieldOfView(bUsingSpyglass ? 28.f : 90.f);
+    PrototypeBody->SetVisibility(!bUsingSpyglass);
 }
 
 void ACaptainCharacter::FireCannon()

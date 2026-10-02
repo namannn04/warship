@@ -5,6 +5,7 @@ An Unreal Engine 5 pirate game being built around one continuous, explorable shi
 ## Current prototype source
 
 - A third-person captain starts in an aft cabin and can walk through a three-level blockout ship, use two physical stairwells, take the helm and hand steering back to automatic heading control.
+- Press `V` to toggle a zoomed spyglass view; pointing at the enemy reveals its range and heading.
 - Sailing accounts for wind alignment, sail setting, acceleration, rudder authority, cargo, damage, and wave motion.
 - Six physical gun deck cannons have a manual loading cycle, aim controls, recoil and cannonball projectiles.
 - An enemy ship maneuvers for broadside shots and fires physical cannons at the player. Both ships take localized damage: hull breaches cause flooding, water lowers a ship, and a sunk hull continues descending and listing. A sunk ship ends the encounter with a victory or defeat message. Cannon impacts can also ignite fires, which spread between deck, sails and hold, damage the ship and respond to storm rain.
