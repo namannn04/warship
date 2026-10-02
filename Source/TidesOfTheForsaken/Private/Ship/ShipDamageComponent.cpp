@@ -21,11 +21,14 @@ void UShipDamageComponent::ApplyImpact(const UPrimitiveComponent* HitComponent, 
 bool UShipDamageComponent::RepairHull(float Work)
 {
     if (Work <= 0.f || Condition.bSunk) return false;
+    const float NeededWork = static_cast<float>(FMath::Max(Condition.BreachSeverity, (100.0 - Condition.Hull) * 2.0));
+    const float EffectiveWork = FMath::Min(Work, NeededWork);
+    if (EffectiveWork <= 0.f) return false;
     UShipInventoryComponent* Inventory = GetOwner()->FindComponentByClass<UShipInventoryComponent>();
-    const int32 PlanksNeeded = FMath::Max(1, FMath::CeilToInt(Work / 5.f));
+    const int32 PlanksNeeded = FMath::Max(1, FMath::CeilToInt(EffectiveWork / 5.f));
     if (Inventory && Inventory->ConsumePlanks(PlanksNeeded))
     {
-        Tides::Damage::RepairHull(Condition, Work);
+        Tides::Damage::RepairHull(Condition, EffectiveWork);
         return true;
     }
     return false;

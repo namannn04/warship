@@ -13,6 +13,7 @@ ACannonball::ACannonball()
     SetRootComponent(Collision);
     Collision->InitSphereRadius(14.f);
     Collision->SetCollisionProfileName(TEXT("BlockAllDynamic"));
+    Collision->SetNotifyRigidBodyCollision(true);
     Collision->OnComponentHit.AddDynamic(this, &ACannonball::OnImpact);
 
     Visual = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Visual"));

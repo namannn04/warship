@@ -25,7 +25,7 @@ void UShipCrewComponent::RegisterCannon(AShipCannon* Cannon)
 void UShipCrewComponent::UpdateJobs()
 {
     UShipDamageComponent* Damage = GetOwner()->FindComponentByClass<UShipDamageComponent>();
-    if (Damage && Damage->GetBreachSeverity() > 0.f)
+    if (Damage && (Damage->GetBreachSeverity() > 0.f || Damage->GetHullIntegrity() < 100.f))
     {
         JobBoard.Post(Tides::Crew::EJobKind::PatchHull, 0, 100,
             static_cast<std::uint8_t>(Tides::Crew::ERole::Carpenter), -900.0, 0.0);
@@ -70,7 +70,7 @@ void UShipCrewComponent::WorkOneStep(FCrewWorker& Worker, const Tides::Crew::FJo
         if (Damage)
         {
             Damage->RepairHull(10.f);
-            if (Damage->GetBreachSeverity() <= 0.f) JobBoard.Complete(Job.Id, Worker.Id);
+            if (Damage->GetBreachSeverity() <= 0.f && Damage->GetHullIntegrity() >= 100.f) JobBoard.Complete(Job.Id, Worker.Id);
         }
         break;
     case Tides::Crew::EJobKind::PumpBilge:

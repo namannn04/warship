@@ -40,7 +40,7 @@ FText ARepairStation::GetInteractionText() const
 {
     if (!IsValid(OwningShip)) return FText::GetEmpty();
     const UShipDamageComponent* Damage = OwningShip->GetShipDamage();
-    if (Damage->GetBreachSeverity() > 0.f) return NSLOCTEXT("Tides", "PatchHull", "Patch Hull");
+    if (Damage->GetBreachSeverity() > 0.f || Damage->GetHullIntegrity() < 100.f) return NSLOCTEXT("Tides", "PatchHull", "Patch Hull");
     if (Damage->GetWaterLevel() > 0.f) return NSLOCTEXT("Tides", "PumpBilge", "Pump Bilge");
     return NSLOCTEXT("Tides", "InspectBilge", "Inspect Bilge");
 }
@@ -50,10 +50,10 @@ void ARepairStation::Interact(ACaptainCharacter* Captain)
     if (!CanInteract(Captain)) return;
     UShipDamageComponent* Damage = OwningShip->GetShipDamage();
     FString Message;
-    if (Damage->GetBreachSeverity() > 0.f)
+    if (Damage->GetBreachSeverity() > 0.f || Damage->GetHullIntegrity() < 100.f)
     {
         const bool bRepaired = Damage->RepairHull(10.f);
-        Message = bRepaired ? TEXT("Hull patched with 2 planks") : TEXT("No planks available");
+        Message = bRepaired ? TEXT("Hull repaired with planks") : TEXT("No planks available");
     }
     else if (Damage->GetWaterLevel() > 0.f)
     {
