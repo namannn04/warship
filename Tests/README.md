@@ -36,3 +36,10 @@ Crew role, priority and job claim rules:
 g++ -std=c++17 -Wall -Wextra -Werror -I Source/TidesOfTheForsaken/Public Tests/CrewJobBoardTests.cpp -o /tmp/tides-crew-tests
 /tmp/tides-crew-tests
 ```
+
+Smooth weather and day/night progression:
+
+```sh
+g++ -std=c++17 -Wall -Wextra -Werror -I Source/TidesOfTheForsaken/Public Tests/WeatherModelTests.cpp -o /tmp/tides-weather-tests
+/tmp/tides-weather-tests
+```
