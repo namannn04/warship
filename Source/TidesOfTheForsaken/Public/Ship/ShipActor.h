@@ -7,6 +7,7 @@
 class USceneComponent;
 class UStaticMeshComponent;
 class UShipMovementComponent;
+class UShipCommandComponent;
 
 /** Walkable two-level prototype ship with an open stairwell. */
 UCLASS()
@@ -16,7 +17,6 @@ class TIDESOFTHEFORSAKEN_API AShipActor : public AActor
 
 public:
     AShipActor();
-    virtual void Tick(float DeltaSeconds) override;
 
     UFUNCTION(BlueprintPure, Category="Ship")
     UShipMovementComponent* GetShipMovement() const { return ShipMovement; }
@@ -29,7 +29,10 @@ public:
 
     void SetCaptainSteering(bool bSteering);
     void SetHelmRudder(float Value);
-    bool IsCaptainSteering() const { return bCaptainSteering; }
+    bool IsCaptainSteering() const;
+
+    UFUNCTION(BlueprintPure, Category="Ship")
+    UShipCommandComponent* GetShipCommands() const { return ShipCommands; }
 
 private:
     UPROPERTY(VisibleAnywhere, Category="Ship")
@@ -47,6 +50,6 @@ private:
     UPROPERTY(VisibleAnywhere, Category="Ship")
     TObjectPtr<UShipMovementComponent> ShipMovement;
 
-    bool bCaptainSteering = false;
-    float HeldHeading = 0.f;
+    UPROPERTY(VisibleAnywhere, Category="Ship")
+    TObjectPtr<UShipCommandComponent> ShipCommands;
 };

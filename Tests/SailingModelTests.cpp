@@ -44,5 +44,9 @@ int main()
     }
     assert(WithWind.Speed > AgainstWind.Speed);
 
+    assert(RudderForHeading(350.0, 10.0) > 0.0);
+    assert(RudderForHeading(10.0, 350.0) < 0.0);
+    assert(std::abs(RudderForHeading(125.0, 125.0)) < 0.0001);
+
     std::cout << "Sailing model tests passed\n";
 }

@@ -1,6 +1,7 @@
 #include "Character/CaptainCharacter.h"
 #include "Ship/ShipActor.h"
 #include "Ship/ShipMovementComponent.h"
+#include "Crew/ShipCommandComponent.h"
 #include "Interaction/ShipInteractable.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -67,6 +68,17 @@ void ACaptainCharacter::Tick(float DeltaSeconds)
             }
         }
     }
+    if (AShipActor* CurrentShip = GetShipForOrders())
+    {
+        if (GEngine)
+        {
+            const UShipMovementComponent* Movement = CurrentShip->GetShipMovement();
+            const FString Status = FString::Printf(TEXT("Heading %.0f  |  Speed %.1f m/s  |  Sail %.0f%%  |  Anchor %s"),
+                CurrentShip->GetActorRotation().Yaw, Movement->GetSpeedCmPerSecond() / 100.f,
+                Movement->GetSailPower() * 100.f, Movement->IsAnchored() ? TEXT("DOWN") : TEXT("UP"));
+            GEngine->AddOnScreenDebugMessage(102, 0.f, FColor::Cyan, Status);
+        }
+    }
     if (SteeredShip)
     {
         SetActorLocation(SteeredShip->GetHelmLocation());
@@ -83,6 +95,11 @@ void ACaptainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
     PlayerInputComponent->BindAxis(TEXT("Turn"), this, &ACaptainCharacter::Turn);
     PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &ACaptainCharacter::LookUp);
     PlayerInputComponent->BindAction(TEXT("Interact"), IE_Pressed, this, &ACaptainCharacter::Interact);
+    PlayerInputComponent->BindAction(TEXT("RaiseSails"), IE_Pressed, this, &ACaptainCharacter::RaiseSails);
+    PlayerInputComponent->BindAction(TEXT("ReduceSails"), IE_Pressed, this, &ACaptainCharacter::ReduceSails);
+    PlayerInputComponent->BindAction(TEXT("ToggleAnchor"), IE_Pressed, this, &ACaptainCharacter::ToggleAnchor);
+    PlayerInputComponent->BindAction(TEXT("OrderPort"), IE_Pressed, this, &ACaptainCharacter::OrderPort);
+    PlayerInputComponent->BindAction(TEXT("OrderStarboard"), IE_Pressed, this, &ACaptainCharacter::OrderStarboard);
 }
 
 void ACaptainCharacter::MoveForward(float Value)
@@ -92,7 +109,7 @@ void ACaptainCharacter::MoveForward(float Value)
         if (!FMath::IsNearlyZero(Value))
         {
             UShipMovementComponent* Movement = SteeredShip->GetShipMovement();
-            Movement->SetSailPower(Movement->GetSailPower() + Value * GetWorld()->GetDeltaSeconds() * 0.4f);
+            SteeredShip->GetShipCommands()->OrderSailPower(Movement->GetSailPower() + Value * GetWorld()->GetDeltaSeconds() * 0.4f);
         }
         return;
     }
@@ -164,4 +181,46 @@ void ACaptainCharacter::Interact()
     {
         if (IShipInteractable* Target = Cast<IShipInteractable>(Focused)) Target->Interact(this);
     }
+}
+
+AShipActor* ACaptainCharacter::GetShipForOrders() const
+{
+    if (SteeredShip) return SteeredShip;
+    const UPrimitiveComponent* Base = GetCharacterMovement()->GetMovementBase();
+    return Base ? Cast<AShipActor>(Base->GetOwner()) : nullptr;
+}
+
+void ACaptainCharacter::RaiseSails()
+{
+    if (AShipActor* Ship = GetShipForOrders())
+    {
+        UShipMovementComponent* Movement = Ship->GetShipMovement();
+        Ship->GetShipCommands()->OrderSailPower(Movement->GetSailPower() + 0.2f);
+    }
+}
+
+void ACaptainCharacter::ReduceSails()
+{
+    if (AShipActor* Ship = GetShipForOrders())
+    {
+        UShipMovementComponent* Movement = Ship->GetShipMovement();
+        Ship->GetShipCommands()->OrderSailPower(Movement->GetSailPower() - 0.2f);
+    }
+}
+
+void ACaptainCharacter::ToggleAnchor()
+{
+    if (AShipActor* Ship = GetShipForOrders()) Ship->GetShipCommands()->OrderAnchorToggle();
+}
+
+void ACaptainCharacter::OrderPort()
+{
+    if (AShipActor* Ship = GetShipForOrders())
+        if (!Ship->IsCaptainSteering()) Ship->GetShipCommands()->OrderTurn(-20.f);
+}
+
+void ACaptainCharacter::OrderStarboard()
+{
+    if (AShipActor* Ship = GetShipForOrders())
+        if (!Ship->IsCaptainSteering()) Ship->GetShipCommands()->OrderTurn(20.f);
 }

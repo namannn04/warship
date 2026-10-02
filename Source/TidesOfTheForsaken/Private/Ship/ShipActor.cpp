@@ -1,12 +1,13 @@
 #include "Ship/ShipActor.h"
 #include "Ship/ShipMovementComponent.h"
+#include "Crew/ShipCommandComponent.h"
 #include "Components/SceneComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "UObject/ConstructorHelpers.h"
 
 AShipActor::AShipActor()
 {
-    PrimaryActorTick.bCanEverTick = true;
+    PrimaryActorTick.bCanEverTick = false;
 
     ShipRoot = CreateDefaultSubobject<USceneComponent>(TEXT("ShipRoot"));
     SetRootComponent(ShipRoot);
@@ -69,6 +70,7 @@ AShipActor::AShipActor()
     if (Cube.Succeeded()) MastVisual->SetStaticMesh(Cube.Object);
 
     ShipMovement = CreateDefaultSubobject<UShipMovementComponent>(TEXT("ShipMovement"));
+    ShipCommands = CreateDefaultSubobject<UShipCommandComponent>(TEXT("ShipCommands"));
 }
 
 FVector AShipActor::GetCaptainStartLocation() const
@@ -83,24 +85,15 @@ FVector AShipActor::GetHelmLocation() const
 
 void AShipActor::SetCaptainSteering(bool bSteering)
 {
-    bCaptainSteering = bSteering;
-    if (!bSteering)
-    {
-        HeldHeading = GetActorRotation().Yaw;
-    }
+    ShipCommands->SetCaptainAtHelm(bSteering);
 }
 
 void AShipActor::SetHelmRudder(float Value)
 {
-    if (bCaptainSteering) ShipMovement->SetRudder(Value);
+    if (ShipCommands->IsCaptainAtHelm()) ShipMovement->SetRudder(Value);
 }
 
-void AShipActor::Tick(float DeltaSeconds)
+bool AShipActor::IsCaptainSteering() const
 {
-    Super::Tick(DeltaSeconds);
-    if (!bCaptainSteering)
-    {
-        const float Error = FMath::FindDeltaAngleDegrees(GetActorRotation().Yaw, HeldHeading);
-        ShipMovement->SetRudder(FMath::Clamp(Error / 25.f, -1.f, 1.f));
-    }
+    return ShipCommands->IsCaptainAtHelm();
 }

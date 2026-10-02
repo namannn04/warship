@@ -42,6 +42,12 @@ inline double Clamp(double Value, double Minimum, double Maximum)
     return std::max(Minimum, std::min(Value, Maximum));
 }
 
+inline double RudderForHeading(double CurrentDegrees, double TargetDegrees)
+{
+    const double Error = std::remainder(TargetDegrees - CurrentDegrees, 360.0);
+    return Clamp(Error / 25.0, -1.0, 1.0);
+}
+
 inline void Advance(FState& State, const FConfig& Config, const FCommand& Command, double DeltaSeconds)
 {
     // Substep slow frames so the helm does not jump or lose most of a frame.

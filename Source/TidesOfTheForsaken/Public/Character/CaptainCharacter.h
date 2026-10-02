@@ -29,6 +29,12 @@ private:
     void Turn(float Value);
     void LookUp(float Value);
     void Interact();
+    void RaiseSails();
+    void ReduceSails();
+    void ToggleAnchor();
+    void OrderPort();
+    void OrderStarboard();
+    AShipActor* GetShipForOrders() const;
     AActor* FindFocusedInteractable() const;
 
     UPROPERTY(VisibleAnywhere, Category="Camera")
