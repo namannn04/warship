@@ -2,6 +2,7 @@
 #include "Combat/ShipCannon.h"
 #include "Crew/CrewMember.h"
 #include "Ship/ShipDamageComponent.h"
+#include "Ship/ShipFireComponent.h"
 #include "GameFramework/Actor.h"
 
 UShipCrewComponent::UShipCrewComponent()
@@ -33,6 +34,21 @@ void UShipCrewComponent::RegisterCrewMember(int32 CrewId, ACrewMember* Member)
 void UShipCrewComponent::UpdateJobs()
 {
     UShipDamageComponent* Damage = GetOwner()->FindComponentByClass<UShipDamageComponent>();
+    UShipFireComponent* Fire = GetOwner()->FindComponentByClass<UShipFireComponent>();
+    if (Fire)
+    {
+        const float Heat[] = { Fire->GetDeckFire(), Fire->GetSailFire(), Fire->GetHoldFire() };
+        const double X[] = { 0.0, 650.0, 0.0 };
+        for (int Zone = 0; Zone < 3; ++Zone)
+        {
+            if (Heat[Zone] > 5.f)
+            {
+                JobBoard.Post(Tides::Crew::EJobKind::ExtinguishFire, Zone, 120,
+                    static_cast<std::uint8_t>(Tides::Crew::ERole::Carpenter), X[Zone], 0.0);
+            }
+            else JobBoard.Cancel(Tides::Crew::EJobKind::ExtinguishFire, Zone);
+        }
+    }
     if (Damage && (Damage->GetBreachSeverity() > 0.f || Damage->GetHullIntegrity() < 100.f))
     {
         JobBoard.Post(Tides::Crew::EJobKind::PatchHull, 0, 100,
@@ -88,6 +104,16 @@ void UShipCrewComponent::WorkOneStep(FCrewWorker& Worker, const Tides::Crew::FJo
             if (Damage->GetWaterLevel() <= 5.f) JobBoard.Complete(Job.Id, Worker.Id);
         }
         break;
+    case Tides::Crew::EJobKind::ExtinguishFire:
+        if (UShipFireComponent* Fire = GetOwner()->FindComponentByClass<UShipFireComponent>())
+        {
+            const auto Zone = static_cast<Tides::Fire::EZone>(Job.TargetId);
+            Fire->Extinguish(Zone, 25.f);
+            if (Zone == Tides::Fire::EZone::Deck && Fire->GetDeckFire() <= 5.f) JobBoard.Complete(Job.Id, Worker.Id);
+            if (Zone == Tides::Fire::EZone::Sails && Fire->GetSailFire() <= 5.f) JobBoard.Complete(Job.Id, Worker.Id);
+            if (Zone == Tides::Fire::EZone::Hold && Fire->GetHoldFire() <= 5.f) JobBoard.Complete(Job.Id, Worker.Id);
+        }
+        break;
     default: break;
     }
 }
@@ -103,6 +129,18 @@ void UShipCrewComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
     UpdateJobs();
     for (FCrewWorker& Worker : Workers)
     {
+        const Tides::Crew::FJob* Assigned = JobBoard.Find(Worker.JobId);
+        if (Worker.Role == Tides::Crew::ERole::Carpenter && Assigned &&
+            Assigned->Kind != Tides::Crew::EJobKind::ExtinguishFire)
+        {
+            const UShipFireComponent* Fire = GetOwner()->FindComponentByClass<UShipFireComponent>();
+            if (Fire && (Fire->GetDeckFire() > 5.f || Fire->GetSailFire() > 5.f || Fire->GetHoldFire() > 5.f))
+            {
+                JobBoard.ReleaseCrew(Worker.Id);
+                Worker.JobId = -1;
+                Worker.WorkElapsed = 0.f;
+            }
+        }
         ACrewMember* Actor = CrewActors.IsValidIndex(Worker.Id - 1) ? CrewActors[Worker.Id - 1].Get() : nullptr;
         if (IsValid(Actor))
         {

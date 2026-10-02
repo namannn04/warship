@@ -8,7 +8,7 @@
 namespace Tides::Crew
 {
 enum class ERole : std::uint8_t { Sailor = 1, Gunner = 2, Carpenter = 4, Lookout = 8, Helmsman = 16 };
-enum class EJobKind : std::uint8_t { ReloadCannon, PatchHull, PumpBilge, TrimSails, WatchHorizon, Steer };
+enum class EJobKind : std::uint8_t { ReloadCannon, PatchHull, PumpBilge, ExtinguishFire, TrimSails, WatchHorizon, Steer };
 
 struct FJob
 {
