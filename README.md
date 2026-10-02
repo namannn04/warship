@@ -17,7 +17,7 @@ This is a **source prototype**, not the finished game or a verified playable bui
 
 Run `Tests/run.sh` to compile and execute the engine-independent C++ rules for sailing, cannon loading, ship damage, inventory and crew job assignment. GitHub Actions runs these checks on every push.
 
-Unreal Editor is not installed in the current development environment. The project still needs an Unreal build and Play-in-Editor checks for compile errors, moving-platform behavior, physical interactions, projectiles and performance. The focused manual checks are in `Docs/`.
+Until Unreal Editor is installed, only the portable tests can run. Once an official Linux engine build is available, `Scripts/build-linux.sh /path/to/UnrealEngine` builds the editor target. The project still needs Play-in-Editor checks for compile errors, moving-platform behavior, physical interactions, projectiles and performance. The focused manual checks are in `Docs/`.
 
 ## Repository layout
 
