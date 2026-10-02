@@ -38,13 +38,21 @@ void UShipMovementComponent::SetConditionFactors(float SailFactor, float RudderF
     WaterLevel = FMath::Clamp(NewWaterLevel, 0.f, 100.f);
 }
 
+void UShipMovementComponent::SetWeather(float WindHeadingDegrees, float NewWaveHeightCm, float WindSpeedFactor)
+{
+    const float Radians = FMath::DegreesToRadians(WindHeadingDegrees);
+    WindDirection = FVector(FMath::Cos(Radians), FMath::Sin(Radians), 0.f);
+    WaveHeightCm = FMath::Max(0.f, NewWaveHeightCm);
+    WeatherSpeedFactor = FMath::Clamp(WindSpeedFactor, 0.1f, 2.f);
+}
+
 void UShipMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
     if (!GetOwner() || DeltaTime <= 0.f) return;
 
     Tides::Sailing::FConfig Config;
-    Config.MaximumSpeed = MaximumSpeedCmPerSecond * SailCondition;
+    Config.MaximumSpeed = MaximumSpeedCmPerSecond * SailCondition * WeatherSpeedFactor;
     Config.Acceleration = AccelerationCmPerSecondSquared;
     Config.Deceleration = DecelerationCmPerSecondSquared;
     Config.MaximumTurnDegreesPerSecond = MaximumTurnDegreesPerSecond * RudderCondition;

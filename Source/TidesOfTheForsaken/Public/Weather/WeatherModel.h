@@ -15,11 +15,17 @@ struct FState
 
 inline void Advance(FState& State, double DeltaSeconds)
 {
-    const double Step = std::clamp(DeltaSeconds, 0.0, 0.25);
-    State.ElapsedSeconds += Step;
-    State.Hours = std::fmod(State.Hours + Step * 24.0 / 1200.0, 24.0);
-    const double Delta = std::clamp(State.TargetStorm - State.Storm, -Step / 45.0, Step / 45.0);
-    State.Storm = std::clamp(State.Storm + Delta, 0.0, 1.0);
+    // Preserve elapsed world time during slow frames while limiting each step.
+    double Remaining = std::clamp(DeltaSeconds, 0.0, 5.0);
+    while (Remaining > 0.000001)
+    {
+        const double Step = std::min(Remaining, 0.25);
+        Remaining -= Step;
+        State.ElapsedSeconds += Step;
+        State.Hours = std::fmod(State.Hours + Step * 24.0 / 1200.0, 24.0);
+        const double Delta = std::clamp(State.TargetStorm - State.Storm, -Step / 45.0, Step / 45.0);
+        State.Storm = std::clamp(State.Storm + Delta, 0.0, 1.0);
+    }
 }
 
 inline double SunFactor(const FState& State)

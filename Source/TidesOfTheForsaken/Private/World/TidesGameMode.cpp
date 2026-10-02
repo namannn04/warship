@@ -4,6 +4,7 @@
 #include "Ship/ShipMovementComponent.h"
 #include "Crew/ShipCrewComponent.h"
 #include "Crew/CrewMember.h"
+#include "Weather/WeatherDirector.h"
 #include "Interaction/HelmStation.h"
 #include "Interaction/RepairStation.h"
 #include "Interaction/SupplyLedger.h"
@@ -115,6 +116,13 @@ void ATidesGameMode::BeginPlay()
     {
         Sun->GetLightComponent()->SetMobility(EComponentMobility::Movable);
         Sun->GetLightComponent()->SetIntensity(6.f);
+    }
+    AWeatherDirector* Weather = World->SpawnActor<AWeatherDirector>(AWeatherDirector::StaticClass());
+    if (Weather)
+    {
+        Weather->RegisterShip(PrototypeShip);
+        Weather->RegisterShip(TargetShip);
+        Weather->SetSun(Sun);
     }
 }
 

@@ -26,6 +26,7 @@ public:
     void SetAnchored(bool bValue);
 
     void SetConditionFactors(float SailFactor, float RudderFactor, float WaterLevel);
+    void SetWeather(float WindHeadingDegrees, float NewWaveHeightCm, float WindSpeedFactor);
 
     UFUNCTION(BlueprintPure, Category="Ship|Sailing")
     float GetSpeedCmPerSecond() const { return SpeedCmPerSecond; }
@@ -67,4 +68,5 @@ private:
     float SailCondition = 1.f;
     float RudderCondition = 1.f;
     float WaterLevel = 0.f;
+    float WeatherSpeedFactor = 1.f;
 };
