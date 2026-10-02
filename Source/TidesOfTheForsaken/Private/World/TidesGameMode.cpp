@@ -6,6 +6,7 @@
 #include "Crew/CrewMember.h"
 #include "Interaction/HelmStation.h"
 #include "Interaction/RepairStation.h"
+#include "Interaction/SupplyLedger.h"
 #include "Combat/ShipCannon.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMeshActor.h"
@@ -56,6 +57,13 @@ void ATidesGameMode::BeginPlay()
                     Cannon->AttachToActor(PrototypeShip, FAttachmentTransformRules::KeepWorldTransform);
                 }
             }
+        }
+        ASupplyLedger* Ledger = World->SpawnActor<ASupplyLedger>(ASupplyLedger::StaticClass(),
+            PrototypeShip->GetSupplyLedgerLocation(), FRotator::ZeroRotator);
+        if (Ledger)
+        {
+            Ledger->SetOwningShip(PrototypeShip);
+            Ledger->AttachToActor(PrototypeShip, FAttachmentTransformRules::KeepWorldTransform);
         }
         struct FCrewSpawn { int32 Id; float X; float Y; const TCHAR* Label; };
         const FCrewSpawn CrewSpawns[] = {
