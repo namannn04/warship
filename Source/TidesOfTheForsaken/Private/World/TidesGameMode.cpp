@@ -4,7 +4,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMeshActor.h"
 #include "GameFramework/PlayerController.h"
-#include "UObject/ConstructorHelpers.h"
+#include "Engine/World.h"
 
 ATidesGameMode::ATidesGameMode()
 {
@@ -29,10 +29,10 @@ void ATidesGameMode::BeginPlay()
     AStaticMeshActor* Ocean = World->SpawnActor<AStaticMeshActor>(AStaticMeshActor::StaticClass(), FVector(0.f, 0.f, -20.f), FRotator::ZeroRotator);
     if (Ocean)
     {
-        static ConstructorHelpers::FObjectFinder<UStaticMesh> Cube(TEXT("/Engine/BasicShapes/Cube.Cube"));
-        if (Cube.Succeeded()) Ocean->GetStaticMeshComponent()->SetStaticMesh(Cube.Object);
+        UStaticMesh* Cube = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Cube.Cube"));
+        if (Cube) Ocean->GetStaticMeshComponent()->SetStaticMesh(Cube);
         Ocean->GetStaticMeshComponent()->SetWorldScale3D(FVector(1000.f, 1000.f, 0.4f));
         Ocean->GetStaticMeshComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-        Ocean->SetMobility(EComponentMobility::Movable);
+        Ocean->GetStaticMeshComponent()->SetMobility(EComponentMobility::Movable);
     }
 }
