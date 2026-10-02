@@ -16,7 +16,7 @@ void UShipCrewComponent::BeginPlay()
     Super::BeginPlay();
     Workers.Add({ 1, Tides::Crew::ERole::Gunner, -1, 0.f, -400.0, -200.0 });
     Workers.Add({ 2, Tides::Crew::ERole::Gunner, -1, 0.f, 400.0, 200.0 });
-    Workers.Add({ 3, Tides::Crew::ERole::Carpenter, -1, 0.f, -900.0, 0.0 });
+    Workers.Add({ 3, Tides::Crew::ERole::Carpenter, -1, 0.f, -570.0, -190.0 });
 }
 
 void UShipCrewComponent::RegisterCannon(AShipCannon* Cannon)
@@ -44,7 +44,7 @@ void UShipCrewComponent::UpdateJobs()
             if (Heat[Zone] > 5.f)
             {
                 JobBoard.Post(Tides::Crew::EJobKind::ExtinguishFire, Zone, 120,
-                    static_cast<std::uint8_t>(Tides::Crew::ERole::Carpenter), X[Zone], 0.0);
+                    static_cast<std::uint8_t>(Tides::Crew::ERole::Carpenter), X[Zone], -190.0);
             }
             else JobBoard.Cancel(Tides::Crew::EJobKind::ExtinguishFire, Zone);
         }
@@ -52,14 +52,14 @@ void UShipCrewComponent::UpdateJobs()
     if (Damage && (Damage->GetBreachSeverity() > 0.f || Damage->GetHullIntegrity() < 100.f))
     {
         JobBoard.Post(Tides::Crew::EJobKind::PatchHull, 0, 100,
-            static_cast<std::uint8_t>(Tides::Crew::ERole::Carpenter), -900.0, 0.0);
+            static_cast<std::uint8_t>(Tides::Crew::ERole::Carpenter), -570.0, -190.0);
     }
     else JobBoard.Cancel(Tides::Crew::EJobKind::PatchHull, 0);
 
     if (Damage && Damage->GetWaterLevel() > 5.f)
     {
         JobBoard.Post(Tides::Crew::EJobKind::PumpBilge, 0, 80,
-            static_cast<std::uint8_t>(Tides::Crew::ERole::Carpenter), -900.0, 0.0);
+            static_cast<std::uint8_t>(Tides::Crew::ERole::Carpenter), -570.0, -190.0);
     }
     else JobBoard.Cancel(Tides::Crew::EJobKind::PumpBilge, 0);
 

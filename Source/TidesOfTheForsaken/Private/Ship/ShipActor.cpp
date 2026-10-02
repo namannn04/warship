@@ -48,6 +48,13 @@ AShipActor::AShipActor()
     AddPiece(TEXT("GunFore"), FVector(1125.f, 0.f, -300.f), FVector(150.f, 260.f, 70.f));
     AddPiece(TEXT("HoldFloor"), FVector(0.f, 0.f, -600.f), FVector(2400.f, 660.f, 70.f));
 
+    // Aft gun deck doubles as the captain's cabin. The two partition halves
+    // leave a capsule-wide doorway into the rest of the gun deck.
+    AddPiece(TEXT("CabinPortWall"), FVector(-700.f, -230.f, -150.f), FVector(40.f, 230.f, 230.f));
+    AddPiece(TEXT("CabinStarboardWall"), FVector(-700.f, 230.f, -150.f), FVector(40.f, 230.f, 230.f));
+    AddPiece(TEXT("CabinChartDesk"), FVector(-1050.f, -190.f, -195.f), FVector(150.f, 90.f, 100.f));
+    AddPiece(TEXT("CabinCot"), FVector(-1040.f, 205.f, -240.f), FVector(250.f, 100.f, 45.f));
+
     // Ten 30 cm risers descend 300 cm over eight metres. CharacterMovement's
     // normal step-up can traverse them without a teleport or a movement mode swap.
     for (int32 Index = 0; Index < 10; ++Index)
@@ -143,7 +150,7 @@ void AShipActor::SetFireVisuals(float DeckHeat, float SailHeat, float HoldHeat)
 
 FVector AShipActor::GetCaptainStartLocation() const
 {
-    return DeckOrigin->GetComponentTransform().TransformPosition(FVector(-650.f, 0.f, 130.f));
+    return DeckOrigin->GetComponentTransform().TransformPosition(FVector(-930.f, 0.f, -160.f));
 }
 
 FVector AShipActor::GetHelmLocation() const
@@ -159,7 +166,7 @@ FVector AShipActor::GetCannonLocation(float AlongShip, bool bPort) const
 
 FVector AShipActor::GetRepairStationLocation() const
 {
-    return DeckOrigin->GetComponentTransform().TransformPosition(FVector(-900.f, 0.f, -195.f));
+    return DeckOrigin->GetComponentTransform().TransformPosition(FVector(-570.f, -190.f, -195.f));
 }
 
 FVector AShipActor::GetGunDeckCrewLocation(float AlongShip, float AcrossShip) const

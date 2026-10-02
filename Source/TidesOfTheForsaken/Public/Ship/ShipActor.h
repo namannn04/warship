@@ -14,7 +14,7 @@ class UShipCrewComponent;
 class UShipFireComponent;
 class UPointLightComponent;
 
-/** Walkable two-level prototype ship with an open stairwell. */
+/** Walkable three-level prototype ship with open stairwells and an aft cabin. */
 UCLASS()
 class TIDESOFTHEFORSAKEN_API AShipActor : public AActor
 {

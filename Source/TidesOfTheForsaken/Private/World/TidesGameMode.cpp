@@ -70,7 +70,7 @@ void ATidesGameMode::BeginPlay()
         const FCrewSpawn CrewSpawns[] = {
             { 1, -400.f, -200.f, TEXT("GUNNER") },
             { 2, 400.f, 200.f, TEXT("GUNNER") },
-            { 3, -900.f, 0.f, TEXT("CARPENTER") }
+            { 3, -570.f, -190.f, TEXT("CARPENTER") }
         };
         for (const FCrewSpawn& Spec : CrewSpawns)
         {
