@@ -39,7 +39,12 @@ AShipActor::AShipActor()
     AddPiece(TEXT("WeatherStarboard"), FVector(0.f, 230.f, 0.f), FVector(2400.f, 200.f, 70.f));
     AddPiece(TEXT("WeatherFore"), FVector(800.f, 0.f, 0.f), FVector(800.f, 260.f, 70.f));
     AddPiece(TEXT("WeatherAft"), FVector(-800.f, 0.f, 0.f), FVector(800.f, 260.f, 70.f));
-    AddPiece(TEXT("GunDeck"), FVector(0.f, 0.f, -300.f), FVector(2400.f, 660.f, 70.f));
+    // Gun-deck hatch sits farther forward, so the two stair flights do not overlap.
+    AddPiece(TEXT("GunPort"), FVector(0.f, -230.f, -300.f), FVector(2400.f, 200.f, 70.f));
+    AddPiece(TEXT("GunStarboard"), FVector(0.f, 230.f, -300.f), FVector(2400.f, 200.f, 70.f));
+    AddPiece(TEXT("GunAft"), FVector(-375.f, 0.f, -300.f), FVector(1650.f, 260.f, 70.f));
+    AddPiece(TEXT("GunFore"), FVector(1125.f, 0.f, -300.f), FVector(150.f, 260.f, 70.f));
+    AddPiece(TEXT("HoldFloor"), FVector(0.f, 0.f, -600.f), FVector(2400.f, 660.f, 70.f));
 
     // Ten 30 cm risers descend 300 cm over eight metres. CharacterMovement's
     // normal step-up can traverse them without a teleport or a movement mode swap.
@@ -58,11 +63,44 @@ AShipActor::AShipActor()
         StructurePieces.Add(Step);
     }
 
-    // Hollow hull walls let the lower deck remain visible and physically usable.
-    AddPiece(TEXT("HullPort"), FVector(0.f, -345.f, -115.f), FVector(2400.f, 30.f, 300.f));
-    AddPiece(TEXT("HullStarboard"), FVector(0.f, 345.f, -115.f), FVector(2400.f, 30.f, 300.f));
-    AddPiece(TEXT("HullBow"), FVector(1215.f, 0.f, -115.f), FVector(30.f, 690.f, 300.f));
-    AddPiece(TEXT("HullStern"), FVector(-1215.f, 0.f, -115.f), FVector(30.f, 690.f, 300.f));
+    // A second ten-step flight reaches the hold from the forward gun deck.
+    for (int32 Index = 0; Index < 10; ++Index)
+    {
+        const FName StepName(*FString::Printf(TEXT("HoldStair_%02d"), Index));
+        const FVector Center(480.f + Index * 60.f, 0.f, -310.f - Index * 30.f);
+        UStaticMeshComponent* Step = CreateDefaultSubobject<UStaticMeshComponent>(StepName);
+        Step->SetupAttachment(DeckOrigin);
+        Step->SetMobility(EComponentMobility::Movable);
+        Step->SetRelativeLocation(Center);
+        Step->SetRelativeScale3D(FVector(0.6f, 2.6f, 0.3f));
+        Step->SetCollisionProfileName(TEXT("BlockAll"));
+        Step->SetCanEverAffectNavigation(false);
+        if (Cube.Succeeded()) Step->SetStaticMesh(Cube.Object);
+        StructurePieces.Add(Step);
+    }
+
+    // The hollow hull encloses both interior levels without filling them.
+    AddPiece(TEXT("HullPort"), FVector(0.f, -345.f, -265.f), FVector(2400.f, 30.f, 600.f));
+    AddPiece(TEXT("HullStarboard"), FVector(0.f, 345.f, -265.f), FVector(2400.f, 30.f, 600.f));
+    AddPiece(TEXT("HullBow"), FVector(1215.f, 0.f, -265.f), FVector(30.f, 690.f, 600.f));
+    AddPiece(TEXT("HullStern"), FVector(-1215.f, 0.f, -265.f), FVector(30.f, 690.f, 600.f));
+
+    // Supply crates line the hold walls while the central walking route stays open.
+    for (int32 Index = 0; Index < 6; ++Index)
+    {
+        const FName CrateName(*FString::Printf(TEXT("SupplyCrate_%02d"), Index));
+        const float X = -950.f + (Index / 2) * 600.f;
+        const float Y = Index % 2 == 0 ? -225.f : 225.f;
+        UStaticMeshComponent* Crate = CreateDefaultSubobject<UStaticMeshComponent>(CrateName);
+        Crate->SetupAttachment(DeckOrigin);
+        Crate->SetMobility(EComponentMobility::Movable);
+        Crate->SetRelativeLocation(FVector(X, Y, -510.f));
+        Crate->SetRelativeScale3D(FVector(0.9f, 0.9f, 0.9f));
+        Crate->SetCollisionProfileName(TEXT("BlockAll"));
+        Crate->SetCanEverAffectNavigation(false);
+        if (Cube.Succeeded()) Crate->SetStaticMesh(Cube.Object);
+        StructurePieces.Add(Crate);
+    }
 
     MastVisual = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MastVisual"));
     MastVisual->SetupAttachment(DeckOrigin);
