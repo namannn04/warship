@@ -2,6 +2,8 @@
 #include "Ship/ShipActor.h"
 #include "Ship/ShipMovementComponent.h"
 #include "Ship/ShipDamageComponent.h"
+#include "Ship/ShipFireComponent.h"
+#include "World/TidesGameMode.h"
 #include "Crew/ShipCommandComponent.h"
 #include "Combat/ShipCannon.h"
 #include "Interaction/ShipInteractable.h"
@@ -87,11 +89,22 @@ void ACaptainCharacter::Tick(float DeltaSeconds)
         if (GEngine)
         {
             const UShipMovementComponent* Movement = CurrentShip->GetShipMovement();
-            const FString Status = FString::Printf(TEXT("Heading %.0f  |  Speed %.1f m/s  |  Sail %.0f%%  |  Anchor %s  |  Hull %.0f  |  Water %.0f"),
+            const float Fire = FMath::Max3(CurrentShip->GetShipFire()->GetDeckFire(),
+                CurrentShip->GetShipFire()->GetSailFire(), CurrentShip->GetShipFire()->GetHoldFire());
+            const FString Status = FString::Printf(TEXT("Heading %.0f  |  Speed %.1f m/s  |  Sail %.0f%%  |  Anchor %s  |  Hull %.0f  |  Water %.0f  |  Fire %.0f"),
                 CurrentShip->GetActorRotation().Yaw, Movement->GetSpeedCmPerSecond() / 100.f,
                 Movement->GetSailPower() * 100.f, Movement->IsAnchored() ? TEXT("DOWN") : TEXT("UP"),
-                CurrentShip->GetShipDamage()->GetHullIntegrity(), CurrentShip->GetShipDamage()->GetWaterLevel());
+                CurrentShip->GetShipDamage()->GetHullIntegrity(), CurrentShip->GetShipDamage()->GetWaterLevel(), Fire);
             GEngine->AddOnScreenDebugMessage(102, 0.f, FColor::Cyan, Status);
+            const ATidesGameMode* Mode = GetWorld()->GetAuthGameMode<ATidesGameMode>();
+            const AShipActor* Enemy = Mode ? Mode->GetEnemyShip() : nullptr;
+            if (IsValid(Enemy))
+            {
+                GEngine->AddOnScreenDebugMessage(104, 0.f, FColor::Orange,
+                    FString::Printf(TEXT("Enemy: %.0f m away  |  Hull %.0f  |  Water %.0f"),
+                        FVector::Dist2D(CurrentShip->GetActorLocation(), Enemy->GetActorLocation()) / 100.f,
+                        Enemy->GetShipDamage()->GetHullIntegrity(), Enemy->GetShipDamage()->GetWaterLevel()));
+            }
         }
     }
     if (SteeredShip)

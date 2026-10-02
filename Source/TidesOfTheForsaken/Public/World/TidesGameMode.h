@@ -19,6 +19,8 @@ public:
     virtual void Tick(float DeltaSeconds) override;
     virtual void RestartPlayer(AController* NewPlayer) override;
 
+    AShipActor* GetEnemyShip() const { return EnemyShip; }
+
 private:
     void PlaceCaptain(AController* Controller) const;
 
