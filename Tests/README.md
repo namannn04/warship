@@ -22,3 +22,10 @@ Localized damage, flooding and repairs:
 g++ -std=c++17 -Wall -Wextra -Werror -I Source/TidesOfTheForsaken/Public Tests/ShipDamageModelTests.cpp -o /tmp/tides-damage-tests
 /tmp/tides-damage-tests
 ```
+
+Ship supply consumption and cargo weight:
+
+```sh
+g++ -std=c++17 -Wall -Wextra -Werror -I Source/TidesOfTheForsaken/Public Tests/ShipInventoryModelTests.cpp -o /tmp/tides-inventory-tests
+/tmp/tides-inventory-tests
+```

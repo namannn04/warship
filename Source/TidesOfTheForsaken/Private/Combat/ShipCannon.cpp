@@ -2,6 +2,7 @@
 #include "Combat/Cannonball.h"
 #include "Character/CaptainCharacter.h"
 #include "Ship/ShipActor.h"
+#include "Ship/ShipInventoryComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/World.h"
@@ -65,6 +66,10 @@ void AShipCannon::Aim(float YawInput, float PitchInput)
 
 void AShipCannon::AdvanceLoading()
 {
+    if (!IsValid(OwningShip)) return;
+    UShipInventoryComponent* Inventory = OwningShip->GetShipInventory();
+    if (LoadingState.Stage == Tides::Cannon::EStage::Clean && !Inventory->ConsumePowder()) return;
+    if (LoadingState.Stage == Tides::Cannon::EStage::Powder && !Inventory->ConsumeCannonball()) return;
     Tides::Cannon::AdvanceLoading(LoadingState);
 }
 

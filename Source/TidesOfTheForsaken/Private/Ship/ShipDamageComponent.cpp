@@ -1,5 +1,6 @@
 #include "Ship/ShipDamageComponent.h"
 #include "Ship/ShipMovementComponent.h"
+#include "Ship/ShipInventoryComponent.h"
 #include "Components/PrimitiveComponent.h"
 #include "GameFramework/Actor.h"
 
@@ -17,9 +18,17 @@ void UShipDamageComponent::ApplyImpact(const UPrimitiveComponent* HitComponent, 
     Tides::Damage::ApplyHit(Condition, Section, Strength);
 }
 
-void UShipDamageComponent::RepairHull(float Work)
+bool UShipDamageComponent::RepairHull(float Work)
 {
-    Tides::Damage::RepairHull(Condition, Work);
+    if (Work <= 0.f || Condition.bSunk) return false;
+    UShipInventoryComponent* Inventory = GetOwner()->FindComponentByClass<UShipInventoryComponent>();
+    const int32 PlanksNeeded = FMath::Max(1, FMath::CeilToInt(Work / 5.f));
+    if (Inventory && Inventory->ConsumePlanks(PlanksNeeded))
+    {
+        Tides::Damage::RepairHull(Condition, Work);
+        return true;
+    }
+    return false;
 }
 
 void UShipDamageComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -28,7 +37,9 @@ void UShipDamageComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
     Tides::Damage::Tick(Condition, DeltaTime, bPumping);
     if (UShipMovementComponent* Movement = GetOwner()->FindComponentByClass<UShipMovementComponent>())
     {
-        Movement->SetConditionFactors(static_cast<float>(Tides::Damage::SailEfficiency(Condition)),
+        const UShipInventoryComponent* Inventory = GetOwner()->FindComponentByClass<UShipInventoryComponent>();
+        const float CargoFactor = Inventory ? Inventory->GetCargoSpeedFactor() : 1.f;
+        Movement->SetConditionFactors(static_cast<float>(Tides::Damage::SailEfficiency(Condition)) * CargoFactor,
             static_cast<float>(Tides::Damage::RudderEfficiency(Condition)),
             static_cast<float>(Condition.Water));
         if (Condition.bSunk) Movement->SetSailPower(0.f);

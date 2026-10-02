@@ -20,7 +20,7 @@ public:
     void ApplyImpact(const UPrimitiveComponent* HitComponent, float Strength);
 
     UFUNCTION(BlueprintCallable, Category="Ship|Damage")
-    void RepairHull(float Work);
+    bool RepairHull(float Work);
 
     UFUNCTION(BlueprintCallable, Category="Ship|Damage")
     void SetPumping(bool bValue) { bPumping = bValue; }

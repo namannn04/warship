@@ -2,6 +2,7 @@
 #include "Ship/ShipMovementComponent.h"
 #include "Crew/ShipCommandComponent.h"
 #include "Ship/ShipDamageComponent.h"
+#include "Ship/ShipInventoryComponent.h"
 #include "Components/SceneComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "UObject/ConstructorHelpers.h"
@@ -73,6 +74,7 @@ AShipActor::AShipActor()
     ShipMovement = CreateDefaultSubobject<UShipMovementComponent>(TEXT("ShipMovement"));
     ShipCommands = CreateDefaultSubobject<UShipCommandComponent>(TEXT("ShipCommands"));
     ShipDamage = CreateDefaultSubobject<UShipDamageComponent>(TEXT("ShipDamage"));
+    ShipInventory = CreateDefaultSubobject<UShipInventoryComponent>(TEXT("ShipInventory"));
 }
 
 FVector AShipActor::GetCaptainStartLocation() const
