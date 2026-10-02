@@ -8,3 +8,10 @@ g++ -std=c++17 -Wall -Wextra -Werror -I Source/TidesOfTheForsaken/Public Tests/S
 ```
 
 These tests cover acceleration, rudder authority, anchor deceleration, frame substeps, and wind alignment. They verify the sailing rules only. Unreal Editor is still required to check moving deck collisions, camera behavior, and actual gameplay.
+
+Cannon reload and recoil state machine:
+
+```sh
+g++ -std=c++17 -Wall -Wextra -Werror -I Source/TidesOfTheForsaken/Public Tests/CannonModelTests.cpp -o /tmp/tides-cannon-tests
+/tmp/tides-cannon-tests
+```
