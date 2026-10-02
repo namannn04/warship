@@ -18,6 +18,13 @@ void UShipDamageComponent::ApplyImpact(const UPrimitiveComponent* HitComponent, 
     Tides::Damage::ApplyHit(Condition, Section, Strength);
 }
 
+void UShipDamageComponent::ApplyFireDamage(float DeckDamage, float SailDamage, float HoldDamage)
+{
+    if (Condition.bSunk) return;
+    Condition.Hull = FMath::Max(0.0, Condition.Hull - FMath::Max(0.f, DeckDamage + HoldDamage));
+    Condition.Sails = FMath::Max(0.0, Condition.Sails - FMath::Max(0.f, SailDamage));
+}
+
 bool UShipDamageComponent::RepairHull(float Work)
 {
     if (Work <= 0.f || Condition.bSunk) return false;

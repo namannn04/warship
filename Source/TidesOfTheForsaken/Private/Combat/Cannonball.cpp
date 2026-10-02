@@ -1,6 +1,7 @@
 #include "Combat/Cannonball.h"
 #include "Ship/ShipActor.h"
 #include "Ship/ShipDamageComponent.h"
+#include "Ship/ShipFireComponent.h"
 #include "Engine/Engine.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -37,6 +38,10 @@ void ACannonball::OnImpact(UPrimitiveComponent* HitComponent, AActor* OtherActor
     if (AShipActor* Ship = Cast<AShipActor>(OtherActor))
     {
         Ship->GetShipDamage()->ApplyImpact(OtherComponent, 35.f);
+        if (FMath::FRand() < 0.2f)
+        {
+            Ship->GetShipFire()->Ignite(Tides::Fire::EZone::Deck, 35.f);
+        }
         if (GEngine)
         {
             GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Orange,

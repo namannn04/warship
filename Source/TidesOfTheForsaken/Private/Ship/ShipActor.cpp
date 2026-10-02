@@ -3,9 +3,11 @@
 #include "Crew/ShipCommandComponent.h"
 #include "Ship/ShipDamageComponent.h"
 #include "Ship/ShipInventoryComponent.h"
+#include "Ship/ShipFireComponent.h"
 #include "Crew/ShipCrewComponent.h"
 #include "Components/SceneComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/PointLightComponent.h"
 #include "UObject/ConstructorHelpers.h"
 
 AShipActor::AShipActor()
@@ -115,6 +117,28 @@ AShipActor::AShipActor()
     ShipDamage = CreateDefaultSubobject<UShipDamageComponent>(TEXT("ShipDamage"));
     ShipInventory = CreateDefaultSubobject<UShipInventoryComponent>(TEXT("ShipInventory"));
     ShipCrew = CreateDefaultSubobject<UShipCrewComponent>(TEXT("ShipCrew"));
+    ShipFire = CreateDefaultSubobject<UShipFireComponent>(TEXT("ShipFire"));
+
+    const auto AddFireLight = [this](const TCHAR* Name, const FVector& Position)
+    {
+        UPointLightComponent* Light = CreateDefaultSubobject<UPointLightComponent>(Name);
+        Light->SetupAttachment(DeckOrigin);
+        Light->SetRelativeLocation(Position);
+        Light->SetLightColor(FLinearColor(1.f, 0.25f, 0.02f));
+        Light->SetAttenuationRadius(450.f);
+        Light->SetIntensity(0.f);
+        return Light;
+    };
+    DeckFireLight = AddFireLight(TEXT("DeckFireLight"), FVector(0.f, -180.f, 100.f));
+    SailFireLight = AddFireLight(TEXT("SailFireLight"), FVector(650.f, 0.f, 650.f));
+    HoldFireLight = AddFireLight(TEXT("HoldFireLight"), FVector(0.f, 0.f, -460.f));
+}
+
+void AShipActor::SetFireVisuals(float DeckHeat, float SailHeat, float HoldHeat)
+{
+    DeckFireLight->SetIntensity(DeckHeat * 35.f);
+    SailFireLight->SetIntensity(SailHeat * 35.f);
+    HoldFireLight->SetIntensity(HoldHeat * 35.f);
 }
 
 FVector AShipActor::GetCaptainStartLocation() const

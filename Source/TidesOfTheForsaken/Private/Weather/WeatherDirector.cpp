@@ -1,6 +1,7 @@
 #include "Weather/WeatherDirector.h"
 #include "Ship/ShipActor.h"
 #include "Ship/ShipMovementComponent.h"
+#include "Ship/ShipFireComponent.h"
 #include "Engine/DirectionalLight.h"
 #include "Components/DirectionalLightComponent.h"
 
@@ -33,6 +34,8 @@ void AWeatherDirector::Tick(float DeltaSeconds)
             static_cast<float>(Tides::Weather::WindHeadingDegrees(WeatherState)),
             static_cast<float>(Tides::Weather::WaveHeightCm(WeatherState)),
             static_cast<float>(Tides::Weather::WindSpeedFactor(WeatherState)));
+        Ship->GetShipFire()->SetWeather(static_cast<float>(WeatherState.Storm),
+            static_cast<float>(WeatherState.Storm));
     }
     if (IsValid(Sun))
     {

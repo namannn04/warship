@@ -18,6 +18,7 @@ public:
     virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
     void ApplyImpact(const UPrimitiveComponent* HitComponent, float Strength);
+    void ApplyFireDamage(float DeckDamage, float SailDamage, float HoldDamage);
 
     UFUNCTION(BlueprintCallable, Category="Ship|Damage")
     bool RepairHull(float Work);
