@@ -5,11 +5,10 @@
 #include "ShipActor.generated.h"
 
 class USceneComponent;
-class UBoxComponent;
 class UStaticMeshComponent;
 class UShipMovementComponent;
 
-/** Collision-ready prototype ship. Art meshes can replace the primitive visuals. */
+/** Walkable two-level prototype ship with an open stairwell. */
 UCLASS()
 class TIDESOFTHEFORSAKEN_API AShipActor : public AActor
 {
@@ -37,15 +36,14 @@ private:
     TObjectPtr<USceneComponent> ShipRoot;
 
     UPROPERTY(VisibleAnywhere, Category="Ship")
-    TObjectPtr<UBoxComponent> DeckCollision;
+    TObjectPtr<USceneComponent> DeckOrigin;
 
     UPROPERTY(VisibleAnywhere, Category="Ship")
-    TObjectPtr<UStaticMeshComponent> HullVisual;
+    TArray<TObjectPtr<UStaticMeshComponent>> StructurePieces;
 
     UPROPERTY(VisibleAnywhere, Category="Ship")
     TObjectPtr<UStaticMeshComponent> MastVisual;
 
-    UPROPERTY(VisibleAnywhere, Category="Ship")
     UPROPERTY(VisibleAnywhere, Category="Ship")
     TObjectPtr<UShipMovementComponent> ShipMovement;
 
