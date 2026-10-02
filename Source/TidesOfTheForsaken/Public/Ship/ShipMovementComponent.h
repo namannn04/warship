@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Ship/SailingModel.h"
 #include "ShipMovementComponent.generated.h"
 
 /** Kinematic sailing motion. Deck characters use Unreal's movement base to inherit it. */
@@ -59,6 +60,6 @@ private:
     float Rudder = 0.f;
     float SpeedCmPerSecond = 0.f;
     bool bAnchored = false;
-    float SimulationTime = 0.f;
     float BaseWaterlineZ = 0.f;
+    Tides::Sailing::FState SailingState;
 };

@@ -11,7 +11,9 @@ void UShipMovementComponent::BeginPlay()
 {
     Super::BeginPlay();
     BaseWaterlineZ = GetOwner()->GetActorLocation().Z;
-    WindDirection = WindDirection.GetSafeNormal2D();
+    SailingState.X = GetOwner()->GetActorLocation().X;
+    SailingState.Y = GetOwner()->GetActorLocation().Y;
+    SailingState.YawDegrees = GetOwner()->GetActorRotation().Yaw;
 }
 
 void UShipMovementComponent::SetSailPower(float Value)
@@ -34,24 +36,23 @@ void UShipMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
     if (!GetOwner() || DeltaTime <= 0.f) return;
 
-    const float Step = FMath::Min(DeltaTime, 0.05f);
-    SimulationTime += Step;
-    const FVector Forward = GetOwner()->GetActorForwardVector();
-    const float WindAlignment = FVector::DotProduct(Forward, WindDirection);
-    // Sailing into the wind remains possible at low speed; broad reach is faster.
-    const float WindEfficiency = FMath::Clamp(0.45f + 0.55f * WindAlignment, 0.12f, 1.f);
-    const float TargetSpeed = bAnchored ? 0.f : SailPower * MaximumSpeedCmPerSecond * WindEfficiency;
-    const float Rate = TargetSpeed > SpeedCmPerSecond ? AccelerationCmPerSecondSquared : DecelerationCmPerSecondSquared;
-    SpeedCmPerSecond = FMath::FInterpConstantTo(SpeedCmPerSecond, TargetSpeed, Step, Rate);
+    Tides::Sailing::FConfig Config;
+    Config.MaximumSpeed = MaximumSpeedCmPerSecond;
+    Config.Acceleration = AccelerationCmPerSecondSquared;
+    Config.Deceleration = DecelerationCmPerSecondSquared;
+    Config.MaximumTurnDegreesPerSecond = MaximumTurnDegreesPerSecond;
+    Config.WaveHeight = WaveHeightCm;
+    Config.WindX = WindDirection.X;
+    Config.WindY = WindDirection.Y;
 
-    const float SteeringAuthority = FMath::Clamp(SpeedCmPerSecond / 180.f, 0.f, 1.f);
-    const float YawDelta = Rudder * MaximumTurnDegreesPerSecond * SteeringAuthority * Step;
-    FRotator Rotation = GetOwner()->GetActorRotation();
-    Rotation.Yaw = FRotator::NormalizeAxis(Rotation.Yaw + YawDelta);
-    Rotation.Pitch = 1.2f * FMath::Sin(SimulationTime * 0.8f);
-    Rotation.Roll = 1.5f * FMath::Sin(SimulationTime * 0.63f + 0.8f);
+    Tides::Sailing::FCommand Command;
+    Command.SailPower = SailPower;
+    Command.Rudder = Rudder;
+    Command.bAnchored = bAnchored;
+    Tides::Sailing::Advance(SailingState, Config, Command, DeltaTime);
+    SpeedCmPerSecond = static_cast<float>(SailingState.Speed);
 
-    FVector Position = GetOwner()->GetActorLocation() + Forward * SpeedCmPerSecond * Step;
-    Position.Z = BaseWaterlineZ + WaveHeightCm * FMath::Sin(SimulationTime * 0.72f);
+    const FVector Position(SailingState.X, SailingState.Y, BaseWaterlineZ + SailingState.Heave);
+    const FRotator Rotation(SailingState.PitchDegrees, SailingState.YawDegrees, SailingState.RollDegrees);
     GetOwner()->SetActorLocationAndRotation(Position, Rotation, false, nullptr, ETeleportType::None);
 }
