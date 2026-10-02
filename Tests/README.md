@@ -15,3 +15,10 @@ Cannon reload and recoil state machine:
 g++ -std=c++17 -Wall -Wextra -Werror -I Source/TidesOfTheForsaken/Public Tests/CannonModelTests.cpp -o /tmp/tides-cannon-tests
 /tmp/tides-cannon-tests
 ```
+
+Localized damage, flooding and repairs:
+
+```sh
+g++ -std=c++17 -Wall -Wextra -Werror -I Source/TidesOfTheForsaken/Public Tests/ShipDamageModelTests.cpp -o /tmp/tides-damage-tests
+/tmp/tides-damage-tests
+```
