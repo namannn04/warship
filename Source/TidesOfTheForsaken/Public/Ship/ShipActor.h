@@ -30,6 +30,7 @@ public:
     FVector GetHelmLocation() const;
 
     FVector GetCannonLocation(float AlongShip, bool bPort) const;
+    FVector GetRepairStationLocation() const;
 
     void SetCaptainSteering(bool bSteering);
     void SetHelmRudder(float Value);

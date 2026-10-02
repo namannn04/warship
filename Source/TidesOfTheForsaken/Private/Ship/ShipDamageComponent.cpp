@@ -31,6 +31,13 @@ bool UShipDamageComponent::RepairHull(float Work)
     return false;
 }
 
+bool UShipDamageComponent::PumpWater(float Work)
+{
+    if (Work <= 0.f || Condition.bSunk || Condition.Water <= 0.0) return false;
+    Tides::Damage::PumpWater(Condition, Work);
+    return true;
+}
+
 void UShipDamageComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);

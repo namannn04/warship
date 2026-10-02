@@ -3,6 +3,7 @@
 #include "Ship/ShipActor.h"
 #include "Ship/ShipMovementComponent.h"
 #include "Interaction/HelmStation.h"
+#include "Interaction/RepairStation.h"
 #include "Combat/ShipCannon.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMeshActor.h"
@@ -31,6 +32,13 @@ void ATidesGameMode::BeginPlay()
         {
             Helm->SetOwningShip(PrototypeShip);
             Helm->AttachToActor(PrototypeShip, FAttachmentTransformRules::KeepWorldTransform);
+        }
+        ARepairStation* Repair = World->SpawnActor<ARepairStation>(ARepairStation::StaticClass(),
+            PrototypeShip->GetRepairStationLocation(), FRotator::ZeroRotator);
+        if (Repair)
+        {
+            Repair->SetOwningShip(PrototypeShip);
+            Repair->AttachToActor(PrototypeShip, FAttachmentTransformRules::KeepWorldTransform);
         }
         for (const float AlongShip : { -600.f, 0.f, 600.f })
         {

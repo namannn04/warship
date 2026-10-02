@@ -23,6 +23,9 @@ public:
     bool RepairHull(float Work);
 
     UFUNCTION(BlueprintCallable, Category="Ship|Damage")
+    bool PumpWater(float Work);
+
+    UFUNCTION(BlueprintCallable, Category="Ship|Damage")
     void SetPumping(bool bValue) { bPumping = bValue; }
 
     UFUNCTION(BlueprintPure, Category="Ship|Damage")
@@ -33,6 +36,9 @@ public:
 
     UFUNCTION(BlueprintPure, Category="Ship|Damage")
     float GetWaterLevel() const { return static_cast<float>(Condition.Water); }
+
+    UFUNCTION(BlueprintPure, Category="Ship|Damage")
+    float GetBreachSeverity() const { return static_cast<float>(Condition.BreachSeverity); }
 
     UFUNCTION(BlueprintPure, Category="Ship|Damage")
     bool IsSunk() const { return Condition.bSunk; }

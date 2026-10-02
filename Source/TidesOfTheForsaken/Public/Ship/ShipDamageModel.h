@@ -52,6 +52,12 @@ inline void Tick(FState& State, double DeltaSeconds, bool bPumping)
     State.bSunk = State.Water >= 100.0;
 }
 
+inline void PumpWater(FState& State, double Work)
+{
+    if (State.bSunk) return;
+    State.Water = std::max(0.0, State.Water - std::max(0.0, Work));
+}
+
 inline void RepairHull(FState& State, double Work)
 {
     if (State.bSunk) return;

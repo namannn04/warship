@@ -17,6 +17,9 @@ int main()
     assert(Ship.BreachSeverity == 0.0);
     for (int I = 0; I < 40; ++I) Tick(Ship, 0.25, true);
     assert(Ship.Water < Flooded);
+    const double WaterBeforeManualPump = Ship.Water;
+    PumpWater(Ship, 5.0);
+    assert(Ship.Water <= WaterBeforeManualPump);
 
     ApplyHit(Ship, ESection::Sails, 50.0);
     ApplyHit(Ship, ESection::Mast, 50.0);

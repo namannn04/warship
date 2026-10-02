@@ -93,6 +93,11 @@ FVector AShipActor::GetCannonLocation(float AlongShip, bool bPort) const
         FVector(AlongShip, bPort ? -245.f : 245.f, -190.f));
 }
 
+FVector AShipActor::GetRepairStationLocation() const
+{
+    return DeckOrigin->GetComponentTransform().TransformPosition(FVector(-900.f, 0.f, -170.f));
+}
+
 void AShipActor::SetCaptainSteering(bool bSteering)
 {
     ShipCommands->SetCaptainAtHelm(bSteering);
