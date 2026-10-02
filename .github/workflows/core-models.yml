@@ -1,0 +1,13 @@
+name: Core model tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  portable-models:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and run C++ model tests
+        run: Tests/run.sh
