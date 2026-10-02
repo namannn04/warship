@@ -29,3 +29,10 @@ Ship supply consumption and cargo weight:
 g++ -std=c++17 -Wall -Wextra -Werror -I Source/TidesOfTheForsaken/Public Tests/ShipInventoryModelTests.cpp -o /tmp/tides-inventory-tests
 /tmp/tides-inventory-tests
 ```
+
+Crew role, priority and job claim rules:
+
+```sh
+g++ -std=c++17 -Wall -Wextra -Werror -I Source/TidesOfTheForsaken/Public Tests/CrewJobBoardTests.cpp -o /tmp/tides-crew-tests
+/tmp/tides-crew-tests
+```
