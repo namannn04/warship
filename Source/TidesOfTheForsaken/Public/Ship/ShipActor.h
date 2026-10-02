@@ -27,6 +27,8 @@ public:
     UFUNCTION(BlueprintPure, Category="Ship")
     FVector GetHelmLocation() const;
 
+    FVector GetCannonLocation(float AlongShip, bool bPort) const;
+
     void SetCaptainSteering(bool bSteering);
     void SetHelmRudder(float Value);
     bool IsCaptainSteering() const;

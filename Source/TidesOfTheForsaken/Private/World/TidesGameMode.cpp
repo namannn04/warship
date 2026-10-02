@@ -2,6 +2,7 @@
 #include "Character/CaptainCharacter.h"
 #include "Ship/ShipActor.h"
 #include "Interaction/HelmStation.h"
+#include "Combat/ShipCannon.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMeshActor.h"
 #include "Engine/DirectionalLight.h"
@@ -29,6 +30,20 @@ void ATidesGameMode::BeginPlay()
         {
             Helm->SetOwningShip(PrototypeShip);
             Helm->AttachToActor(PrototypeShip, FAttachmentTransformRules::KeepWorldTransform);
+        }
+        for (const float AlongShip : { -600.f, 0.f, 600.f })
+        {
+            for (const bool bPort : { true, false })
+            {
+                const FRotator Facing(0.f, bPort ? -90.f : 90.f, 0.f);
+                AShipCannon* Cannon = World->SpawnActor<AShipCannon>(AShipCannon::StaticClass(),
+                    PrototypeShip->GetCannonLocation(AlongShip, bPort), Facing);
+                if (Cannon)
+                {
+                    Cannon->SetOwningShip(PrototypeShip);
+                    Cannon->AttachToActor(PrototypeShip, FAttachmentTransformRules::KeepWorldTransform);
+                }
+            }
         }
         if (APlayerController* PC = World->GetFirstPlayerController())
         {

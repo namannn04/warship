@@ -2,6 +2,7 @@
 #include "Ship/ShipActor.h"
 #include "Ship/ShipMovementComponent.h"
 #include "Crew/ShipCommandComponent.h"
+#include "Combat/ShipCannon.h"
 #include "Interaction/ShipInteractable.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -56,7 +57,7 @@ void ACaptainCharacter::BeginPlay()
 void ACaptainCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
-    if (!SteeredShip)
+    if (!SteeredShip && !OperatedCannon)
     {
         if (AActor* Focused = FindFocusedInteractable())
         {
@@ -66,6 +67,18 @@ void ACaptainCharacter::Tick(float DeltaSeconds)
                 GEngine->AddOnScreenDebugMessage(101, 0.f, FColor::White,
                     FString::Printf(TEXT("[E] %s"), *Target->GetInteractionText().ToString()));
             }
+        }
+    }
+    if (OperatedCannon)
+    {
+        SetActorLocation(OperatedCannon->GetOperatorLocation());
+        SetActorRotation(OperatedCannon->GetActorRotation());
+        if (Controller) Controller->SetControlRotation(OperatedCannon->GetAimRotation());
+        if (GEngine)
+        {
+            GEngine->AddOnScreenDebugMessage(103, 0.f, FColor::Yellow,
+                FString::Printf(TEXT("Cannon: %hs  |  [R] Load  [LMB] Fire  [E] Leave"),
+                    OperatedCannon->GetLoadingStageLabel()));
         }
     }
     if (AShipActor* CurrentShip = GetShipForOrders())
@@ -95,6 +108,7 @@ void ACaptainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
     PlayerInputComponent->BindAxis(TEXT("Turn"), this, &ACaptainCharacter::Turn);
     PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &ACaptainCharacter::LookUp);
     PlayerInputComponent->BindAction(TEXT("Interact"), IE_Pressed, this, &ACaptainCharacter::Interact);
+    PlayerInputComponent->BindAction(TEXT("FireCannon"), IE_Pressed, this, &ACaptainCharacter::FireCannon);
     PlayerInputComponent->BindAction(TEXT("RaiseSails"), IE_Pressed, this, &ACaptainCharacter::RaiseSails);
     PlayerInputComponent->BindAction(TEXT("ReduceSails"), IE_Pressed, this, &ACaptainCharacter::ReduceSails);
     PlayerInputComponent->BindAction(TEXT("ToggleAnchor"), IE_Pressed, this, &ACaptainCharacter::ToggleAnchor);
@@ -136,11 +150,21 @@ void ACaptainCharacter::MoveRight(float Value)
 
 void ACaptainCharacter::Turn(float Value)
 {
+    if (OperatedCannon)
+    {
+        OperatedCannon->Aim(Value, 0.f);
+        return;
+    }
     AddControllerYawInput(Value);
 }
 
 void ACaptainCharacter::LookUp(float Value)
 {
+    if (OperatedCannon)
+    {
+        OperatedCannon->Aim(0.f, Value);
+        return;
+    }
     AddControllerPitchInput(Value);
 }
 
@@ -159,7 +183,7 @@ AActor* ACaptainCharacter::FindFocusedInteractable() const
 
 void ACaptainCharacter::TakeHelm(AShipActor* Ship)
 {
-    if (!IsValid(Ship) || SteeredShip) return;
+    if (!IsValid(Ship) || SteeredShip || OperatedCannon) return;
     SteeredShip = Ship;
     Ship->SetCaptainSteering(true);
     GetCharacterMovement()->StopMovementImmediately();
@@ -167,8 +191,28 @@ void ACaptainCharacter::TakeHelm(AShipActor* Ship)
     SetActorLocation(Ship->GetHelmLocation());
 }
 
+void ACaptainCharacter::OperateCannon(AShipCannon* Cannon)
+{
+    if (!IsValid(Cannon) || SteeredShip || OperatedCannon) return;
+    OperatedCannon = Cannon;
+    GetCharacterMovement()->StopMovementImmediately();
+    GetCharacterMovement()->SetMovementMode(MOVE_None);
+    SetActorLocation(Cannon->GetOperatorLocation());
+}
+
+void ACaptainCharacter::FireCannon()
+{
+    if (OperatedCannon) OperatedCannon->Fire();
+}
+
 void ACaptainCharacter::Interact()
 {
+    if (OperatedCannon)
+    {
+        OperatedCannon = nullptr;
+        GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+        return;
+    }
     if (SteeredShip)
     {
         SteeredShip->SetCaptainSteering(false);
@@ -192,6 +236,11 @@ AShipActor* ACaptainCharacter::GetShipForOrders() const
 
 void ACaptainCharacter::RaiseSails()
 {
+    if (OperatedCannon)
+    {
+        OperatedCannon->AdvanceLoading();
+        return;
+    }
     if (AShipActor* Ship = GetShipForOrders())
     {
         UShipMovementComponent* Movement = Ship->GetShipMovement();

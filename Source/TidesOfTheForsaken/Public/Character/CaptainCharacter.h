@@ -8,6 +8,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class UStaticMeshComponent;
 class AShipActor;
+class AShipCannon;
 
 /** Third-person captain with direct deck traversal and physical helm handoff. */
 UCLASS()
@@ -22,6 +23,7 @@ public:
     virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
     void TakeHelm(AShipActor* Ship);
+    void OperateCannon(AShipCannon* Cannon);
 
 private:
     void MoveForward(float Value);
@@ -29,6 +31,7 @@ private:
     void Turn(float Value);
     void LookUp(float Value);
     void Interact();
+    void FireCannon();
     void RaiseSails();
     void ReduceSails();
     void ToggleAnchor();
@@ -48,6 +51,9 @@ private:
 
     UPROPERTY()
     TObjectPtr<AShipActor> SteeredShip;
+
+    UPROPERTY()
+    TObjectPtr<AShipCannon> OperatedCannon;
 
     float SteeringInput = 0.f;
 };
