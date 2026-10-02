@@ -46,6 +46,11 @@ void UShipCommandComponent::OrderHoldHeading()
     OrderedHeading = GetOwner()->GetActorRotation().Yaw;
 }
 
+void UShipCommandComponent::OrderHeading(float HeadingDegrees)
+{
+    OrderedHeading = FRotator::NormalizeAxis(HeadingDegrees);
+}
+
 void UShipCommandComponent::OrderAnchorToggle()
 {
     if (Movement) Movement->SetAnchored(!Movement->IsAnchored());

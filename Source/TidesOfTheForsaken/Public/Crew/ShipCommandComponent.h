@@ -29,6 +29,8 @@ public:
     UFUNCTION(BlueprintCallable, Category="Ship|Orders")
     void OrderHoldHeading();
 
+    void OrderHeading(float HeadingDegrees);
+
     UFUNCTION(BlueprintCallable, Category="Ship|Orders")
     void OrderAnchorToggle();
 

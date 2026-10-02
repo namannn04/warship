@@ -4,6 +4,7 @@
 #include "Ship/ShipDamageComponent.h"
 #include "Ship/ShipInventoryComponent.h"
 #include "Ship/ShipFireComponent.h"
+#include "Combat/EnemyShipAIComponent.h"
 #include "Crew/ShipCrewComponent.h"
 #include "Components/SceneComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -125,6 +126,7 @@ AShipActor::AShipActor()
     ShipInventory = CreateDefaultSubobject<UShipInventoryComponent>(TEXT("ShipInventory"));
     ShipCrew = CreateDefaultSubobject<UShipCrewComponent>(TEXT("ShipCrew"));
     ShipFire = CreateDefaultSubobject<UShipFireComponent>(TEXT("ShipFire"));
+    EnemyAI = CreateDefaultSubobject<UEnemyShipAIComponent>(TEXT("EnemyAI"));
 
     const auto AddFireLight = [this](const TCHAR* Name, const FVector& Position)
     {

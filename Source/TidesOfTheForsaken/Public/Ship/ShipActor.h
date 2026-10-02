@@ -14,6 +14,7 @@ class UShipInventoryComponent;
 class UShipCrewComponent;
 class UShipFireComponent;
 class UPointLightComponent;
+class UEnemyShipAIComponent;
 
 /** Walkable three-level prototype ship with open stairwells and an aft cabin. */
 UCLASS()
@@ -56,6 +57,7 @@ public:
     UShipCrewComponent* GetShipCrew() const { return ShipCrew; }
 
     UShipFireComponent* GetShipFire() const { return ShipFire; }
+    UEnemyShipAIComponent* GetEnemyAI() const { return EnemyAI; }
     void SetFireVisuals(float DeckHeat, float SailHeat, float HoldHeat);
 
 private:
@@ -88,6 +90,9 @@ private:
 
     UPROPERTY(VisibleAnywhere, Category="Ship")
     TObjectPtr<UShipFireComponent> ShipFire;
+
+    UPROPERTY(VisibleAnywhere, Category="Ship")
+    TObjectPtr<UEnemyShipAIComponent> EnemyAI;
 
     UPROPERTY(VisibleAnywhere, Category="Ship|Fire")
     TObjectPtr<UPointLightComponent> DeckFireLight;

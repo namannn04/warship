@@ -10,6 +10,7 @@
 #include "Interaction/SupplyLedger.h"
 #include "Interaction/FireStation.h"
 #include "Combat/ShipCannon.h"
+#include "Combat/EnemyShipAIComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMeshActor.h"
 #include "Engine/DirectionalLight.h"
@@ -101,15 +102,31 @@ void ATidesGameMode::BeginPlay()
         }
     }
 
-    // A passive broadside target makes damage and flooding observable in the slice.
+    // The opposing ship begins within broadside range and uses the same physical
+    // cannons, ammunition and localized damage model as the player's ship.
     AShipActor* TargetShip = World->SpawnActor<AShipActor>(AShipActor::StaticClass(),
         FVector(0.f, -3500.f, 0.f), FRotator::ZeroRotator);
     if (TargetShip)
     {
-        TargetShip->Tags.Add(TEXT("BroadsideTarget"));
-        TargetShip->GetShipMovement()->SetSailPower(0.f);
-        TargetShip->GetShipMovement()->SetAnchored(true);
+        TargetShip->Tags.Add(TEXT("EnemyShip"));
         TargetShip->GetShipCrew()->SetWorkEnabled(false);
+        TargetShip->GetEnemyAI()->SetTarget(PrototypeShip);
+        for (const float AlongShip : { -600.f, 0.f, 600.f })
+        {
+            for (const bool bPort : { true, false })
+            {
+                const FRotator Facing(0.f, bPort ? -90.f : 90.f, 0.f);
+                AShipCannon* Cannon = World->SpawnActor<AShipCannon>(AShipCannon::StaticClass(),
+                    TargetShip->GetCannonLocation(AlongShip, bPort), Facing);
+                if (Cannon)
+                {
+                    Cannon->SetOwningShip(TargetShip);
+                    TargetShip->GetEnemyAI()->RegisterCannon(Cannon,
+                        bPort ? Tides::NavalAI::ESide::Port : Tides::NavalAI::ESide::Starboard);
+                    Cannon->AttachToActor(TargetShip, FAttachmentTransformRules::KeepWorldTransform);
+                }
+            }
+        }
     }
 
     AStaticMeshActor* Ocean = World->SpawnActor<AStaticMeshActor>(AStaticMeshActor::StaticClass(), FVector(0.f, 0.f, -20.f), FRotator::ZeroRotator);
