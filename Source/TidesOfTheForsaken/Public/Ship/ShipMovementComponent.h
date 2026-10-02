@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Ship/SailingModel.h"
+#include "Ship/SinkingModel.h"
 #include "ShipMovementComponent.generated.h"
 
 /** Kinematic sailing motion. Deck characters use Unreal's movement base to inherit it. */
@@ -27,6 +28,7 @@ public:
 
     void SetConditionFactors(float SailFactor, float RudderFactor, float WaterLevel);
     void SetWeather(float WindHeadingDegrees, float NewWaveHeightCm, float WindSpeedFactor);
+    void SetSinking(bool bValue) { bSinking = bValue; }
 
     UFUNCTION(BlueprintPure, Category="Ship|Sailing")
     float GetSpeedCmPerSecond() const { return SpeedCmPerSecond; }
@@ -69,4 +71,6 @@ private:
     float RudderCondition = 1.f;
     float WaterLevel = 0.f;
     float WeatherSpeedFactor = 1.f;
+    bool bSinking = false;
+    Tides::Sinking::FState SinkingState;
 };

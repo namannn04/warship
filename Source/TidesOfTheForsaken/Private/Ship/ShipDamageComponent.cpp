@@ -59,6 +59,7 @@ void UShipDamageComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
         Movement->SetConditionFactors(static_cast<float>(Tides::Damage::SailEfficiency(Condition)) * CargoFactor,
             static_cast<float>(Tides::Damage::RudderEfficiency(Condition)),
             static_cast<float>(Condition.Water));
+        Movement->SetSinking(Condition.bSunk);
         if (Condition.bSunk) Movement->SetSailPower(0.f);
     }
 }

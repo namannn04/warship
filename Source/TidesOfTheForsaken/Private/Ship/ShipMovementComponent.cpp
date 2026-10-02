@@ -65,9 +65,12 @@ void UShipMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
     Command.Rudder = Rudder;
     Command.bAnchored = bAnchored;
     Tides::Sailing::Advance(SailingState, Config, Command, DeltaTime);
+    Tides::Sinking::Advance(SinkingState, DeltaTime, bSinking);
     SpeedCmPerSecond = static_cast<float>(SailingState.Speed);
 
-    const FVector Position(SailingState.X, SailingState.Y, BaseWaterlineZ + SailingState.Heave - WaterLevel * 1.5f);
-    const FRotator Rotation(SailingState.PitchDegrees, SailingState.YawDegrees, SailingState.RollDegrees);
+    const FVector Position(SailingState.X, SailingState.Y,
+        BaseWaterlineZ + SailingState.Heave - WaterLevel * 1.5f - SinkingState.DepthCm);
+    const FRotator Rotation(SailingState.PitchDegrees + SinkingState.PitchDegrees,
+        SailingState.YawDegrees, SailingState.RollDegrees + SinkingState.ListDegrees);
     GetOwner()->SetActorLocationAndRotation(Position, Rotation, false, nullptr, ETeleportType::None);
 }
